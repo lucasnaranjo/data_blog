@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Visualization</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
+    <style>
+            #sort-container {
+                margin-left: 40px; /* Adjust this value to align with your y-axis */
+                /* Add more styles if needed */
+                margin-top: 20px;
+            }
+    
+            #sort-container span {
+                margin-right: 0px;
+                font-weight: bold;
+                /* Additional styling for the label */
+            }
+    
+            #sort-container .btn {
+                margin-left: 5px;
+                /* Additional styling for the buttons */
+            }
+    
+            /* Style for active button, if needed */
+            #sort-container .btn.active {
+                font-weight: bold;
+                /* Other styles for active state */
+            }
+    </style>
+</head>
+<body>
+    <div id="sort-container" style="margin-left: 40px;"> <!-- Adjust margin-left as needed -->
+        <span>Sort by:</span>
+        <button id="sort-popularity" class="btn btn-outline-dark">Popularity</button>
+        <button id="sort-score" class="btn btn-outline-dark">Score</button>
+    </div>
+    <div id="your-svg-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
