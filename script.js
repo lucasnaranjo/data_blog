@@ -87,6 +87,9 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
         } else if (criteria === 'score') {
             data.sort((a, b) => d3.descending(a.score_present, b.score_present));
         }
+        else if (criteria === 'score-difference') {
+            data.sort((a, b) => d3.descending(a.score_present - a.score_absent, b.score_present - b.score_absent));
+        }
         console.log("After sorting:", data.map(d => ({ word: d.word, criteria: d[criteria] })));
        
         yScale.domain(data.map(d => d.word));
@@ -113,15 +116,8 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
     d3.select(`#${selectedButtonId}`).classed('active', true); // Add 'active' class to the selected button
 }
 
-d3.select('#sort-popularity').on('click', () => {
-    sortBy('popularity');
-    setActiveButton('sort-popularity');
-});
 
-d3.select('#sort-score').on('click', () => {
-    sortBy('score');
-    setActiveButton('sort-score');
-});
+
 function setActiveButton(selectedButtonId) {
     d3.selectAll('.btn').classed('active', false); // Remove 'active' class from all buttons
     d3.select(`#${selectedButtonId}`).classed('active', true); // Add 'active' class to the selected button
@@ -137,9 +133,16 @@ d3.select('#sort-score').on('click', () => {
     setActiveButton('sort-score');
 });
 
+d3.select('#sort-score-difference').on('click', () => {
+    sortBy('score-difference');
+    setActiveButton('sort-score-difference');
+});
+
     }
 
     // Event listeners for sorting
     d3.select('#sort-popularity').on('click', () => sortBy('popularity'));
     d3.select('#sort-score').on('click', () => sortBy('score'));
+    d3.select('#sort-score-difference').on('click', () => sortBy('score-difference'));
+
 });

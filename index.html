@@ -29,13 +29,21 @@
                 font-weight: bold;
                 /* Other styles for active state */
             }
+            h4 {
+                margin-left: 40px;
+                /* Other styles for active state */
+            }
     </style>
 </head>
 <body>
+    <h2 id="plot-title" style="text-align: left;margin-left: 40px">Activity according to their first words</h2>
+    <h4 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 12pt;margin-left: 40px">The black dot shows the average "activity score" of learners who had that word among its first 7 words.<br>The white dot indicates the aveage for those learners who did not have that word introduced at the beginiing.<br> The dot size is relative to the popularity of the word as an early word.</h4>
+    </div>
     <div id="sort-container" style="margin-left: 40px;"> <!-- Adjust margin-left as needed -->
         <span>Sort by:</span>
         <button id="sort-popularity" class="btn btn-outline-dark">Popularity</button>
         <button id="sort-score" class="btn btn-outline-dark">Score</button>
+        <button id="sort-score-difference" class="btn btn-outline-dark">Score Difference</button>
     </div>
     <div id="your-svg-container"></div>
     <script src="script.js"></script>
