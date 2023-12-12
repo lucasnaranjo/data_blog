@@ -25,9 +25,20 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
         d.popularity = +d.popularity;
     });
 
-    // Create scales
+    // Compute the minimum and maximum scores
+    const minScore = d3.min(data, d => Math.min(d.score_present, d.score_absent));
+    const maxScore = d3.max(data, d => Math.max(d.score_present, d.score_absent));
+    const buffer = (maxScore - minScore) * 0.05; // 5% buffer
+
+    const defaultStrokeWidth = 1; // Default stroke width
+    const hoverStrokeWidth = 3; // Stroke width on hover
+
+// Draw lines with hover effects
+
+    // Adjust the xScale domain
+    
     const xScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => Math.max(d.score_present, d.score_absent))])
+        .domain([minScore - buffer, maxScore])
         .range([margin.left, width - margin.right]);
 
      yScale = d3.scaleBand()
@@ -39,12 +50,13 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
     svg.selectAll('.line')
         .data(data)
         .enter().append('line')
+        .attr('class', d => `line line-${d.word.replace(/\s+/g, '-')}`) // Replace spaces with hyphens
         .attr('x1', d => xScale(d.score_present))
         .attr('x2', d => xScale(d.score_absent))
         .attr('y1', d => yScale(d.word))
         .attr('y2', d => yScale(d.word))
-        .attr('stroke', 'grey');
-
+        .attr('stroke', 'grey')
+        .attr('stroke-width', defaultStrokeWidth);
     // Draw circles
     svg.selectAll('.circle')
         .data(data)
@@ -61,22 +73,38 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
         .enter().append('circle')
         .attr('cx', d => xScale(d.score_absent))
         .attr('cy', d => yScale(d.word))
-        .attr('r', d => scaleRadius(50)) // Adjust the radius
+        .attr('r', d => scaleRadius(0)) // Adjust the radius
         .attr('fill', 'white')
         .attr('stroke', 'black')
         .attr('stroke-width', 1);
 
     // Add Axes
+
+    const yAxis = d3.axisLeft(yScale)
+    .tickFormat(d => d);
+    svg.append('g')
+        .attr('class', 'y-axis')
+        .attr('transform', `translate(${margin.left},0)`)
+        .call(yAxis)
+        .selectAll('.tick text')
+        .attr('class', d => `label label-${d.replace(/\s+/g, '-')}`); // Assign class to y-axis labels
+
+
     const xAxis = d3.axisBottom(xScale);
     svg.append('g')
-        .attr('transform', `translate(0,${height - margin.bottom})`)
+        .attr('transform', `translate(20,${height - margin.bottom})`)
         .call(xAxis);
 
-    const yAxis = d3.axisLeft(yScale);
-    svg.append('g')
-        .attr('class', 'y-axis') // Assign a class for identification
-        .attr('transform', `translate(${margin.left},0)`)
-        .call(yAxis);
+    // Hover events for y-axis labels
+    svg.selectAll('.label')
+        .on('mouseover', function(event, d) {
+            svg.selectAll(`.line-${d.replace(/\s+/g, '-')}`)
+                .attr('stroke-width', hoverStrokeWidth);
+        })
+        .on('mouseout', function(event, d) {
+            svg.selectAll(`.line-${d.replace(/\s+/g, '-')}`)
+                .attr('stroke-width', defaultStrokeWidth);
+        });
 
     // Sort function
     function sortBy(criteria) {
