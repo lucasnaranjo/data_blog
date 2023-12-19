@@ -7,45 +7,139 @@
     <title>D3 Visualization</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
+        #your-svg-container {
+        display: inline-block;
+        width: 800px;
+        /* Other styles */
+        }
         #plot-container {
             width: 800px; /* Same as SVG width */
             margin-left: 40px;
             margin-right: auto;
         }
-        #plot-title, #plot-subtitle {
+        #plot-title {
             text-align: left;
+            margin-top: 60px;
+
         }
         #plot-subtitle {
             font-weight: normal;
             font-size: 12pt;
         }
         #sort-container {
+            margin-left: 10px;
+            text-align: right;
+            margin-top: 50px;
+        }
+        #tooltip {
+        font-size: 12px; /* Adjust this value as needed */
+        }
+        #sort-label {
+            margin-top: 50px;
+        }
+        #starplot-container {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: left;
             margin-left: 40px;
+
         }
-        #sort-container .btn {
-            margin-left: 5px;
+        #word-list-container {
+            display: inline-flex;
+            flex-direction: column;
+            margin-left: 20px;
+            margin-top: 50px;
         }
-        .btn.active {
-            font-weight: bold;
+        #word-checkboxes {
+            margin-top: 100px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
         }
+        body {
+            background-color: #e8f4f8;
+        }
+        .controls-container {
+        display: flex;
+        justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
+        align-items: center; /* Aligns items vertically in the center */
+        width: 800px; /* Match the width of the SVG plot */
+        margin-left: 40px; /* Align with the left side of the plot container */
+        /* Additional styling as needed */
+        }
+
+        .sort-group {
+            display: flex;
+            align-items: center; /* Ensure vertical alignment of elements inside sort group */
+        }
+
+        .toggle-container {
+            display: inline-block;
+            vertical-align: top; /* Adjust the vertical alignment */
+            margin-top: 60px;
+            margin-right: 60px;
+            /* Additional styling for the toggle, if needed */
+        }
+
     </style>
 </head>
 <body>
+    <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="plot-container">
-        <h2 id="plot-title" style="text-align: left">Activity according to their first words</h2>
-        <h4 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 12pt">The black dot represents the average 
-            'activity score' for learners who included early the specific word. A word is classified as 'early' if it is within the learner's 
-            first 6 words and the learner's total vocabulary did not exceed 8 words during their initial week of training. The other end of the line reflects 
-            the average score for learners who did not have the word introduced early. The size of the black dot correlates with the word's 
-            popularity as an early introduction. <br>The activity score is calculated based on the average number of presses per day and on the number of multi-button interactions.<br></h4>
+        <h2 id="plot-title" style="text-align: left">What do their first buttons tell us about their future?</h2>
+        <h5 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
+            User filtering criteria:<br>
+            We excluded learners who logged more than 7 different buttons in their first week of collected data as they might started learning long before logging their data. 
+            We excluded learners who started logging their presses later than 2 months after they started their journey.
+            The resulting dataset is composed of 307 pet learners.<br>
+            The black dot represents the average 
+            score for learners who included early the specific word. A word is classified as 'early' if it is within the learner's 
+            first 4 words. The other end of the line is the average score for learners who did not have the word introduced early. The size of the black dot indicates the word's 
+            popularity as an early button.</h5>
     </div>
-    <div id="sort-container" style="margin-left: 40px;"> <!-- Adjust margin-left as needed -->
-        <span>Sort by:</span>
-        <button id="sort-popularity" class="btn btn-outline-dark">Popularity</button>
-        <button id="sort-score" class="btn btn-outline-dark">Score</button>
-        <button id="sort-score-difference" class="btn btn-outline-dark">Score Difference</button>
+    <div id="metric" style="margin-left: 40px;">
+        <h6>Choose Metric:</h6>
     </div>
+    <div id="metric-selector-container" class="btn-group" role="group" style="margin-left: 40px;">
+        <button type="button" class="btn btn-outline-dark" data-metric="rate"> Interactions/Day</button>
+        <button type="button" class="btn btn-outline-dark" data-metric="ratio">Multi-button Interactions</button>
+        <button type="button" class="btn btn-outline-dark" data-metric="consistency">Consistency</button>
+        <button type="button" class="btn btn-outline-dark" data-metric="buttons">Buttons Available</button>
+    </div>
+    <div class="controls-container">
+        <div class="sort-group" style="display: flex; align-items: center; margin-left: 20px;">
+            <div id="sort-label">
+                <h6>Sort by:</h6>
+            </div>
+            <div id="sort-container" class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-dark" id="sort-by-popularity">Popularity</button>
+                <button type="button" class="btn btn-outline-dark" id="sort-by-metric">Metric</button>
+            </div>
+        </div>
+        <div class="toggle-container">
+            <h6>
+                <input type="checkbox" id="toggle-group">
+                Group Similar Words
+            </h6>
+        </div>
+    </div>    
     <div id="your-svg-container"></div>
-    <script src="script.js"></script>
-</body>
+    <!-- Star Plot Section -->
+    <div style="display: inline-flex;">
+        <div id="starplot-container">
+            <h3>Word Comparison</h3>
+            <h6>Select two words to compare them accross all metrics</h6>
+
+            <!-- Star Plot SVG will be appended here -->
+        </div>
+        <div id="word-list-container">
+            <div id="word-checkboxes">
+                <!-- Checkboxes will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+    <script src="scriptIndividual.js" id="data-script"></script>
+    </body>
 </html>
+
+
