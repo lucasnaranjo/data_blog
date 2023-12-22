@@ -1,5 +1,5 @@
 let svgWidth = document.getElementById('your-svg-container').clientWidth;
-let svgHeight = svgWidth * 0.50; // Maintain aspect ratio, e.g., 3:4
+let svgHeight = svgWidth * 0.40; // Maintain aspect ratio, e.g., 3:4
 let maxPopularity, minPopularity;
 let originalData, groupedData;
 let useGroupedData = false; // State of the toggle
@@ -373,7 +373,7 @@ function getMetricsData(word) {
 }
 
 // Define star plot dimensions
-const starPlotWidth = 400, starPlotHeight = 400;
+const starPlotWidth = 300, starPlotHeight = 300;
 const starRadius = Math.min(starPlotWidth, starPlotHeight) / 3;
 const starCenter = { x: starPlotWidth / 2, y: starPlotHeight / 2 };
 
@@ -509,7 +509,7 @@ function drawLegend(svg, maxPopularity, minPopularity, width, height) {
 
     const legendGroup = svg.append("g")
                            .attr("class", "legend")
-                           .attr("transform", `translate(100,20)`); // Adjusted to position at top left
+                           .attr("transform", `translate(680,205)`); // Adjusted to position at top left
 
     // Add legend title
     legendGroup.append("text")
