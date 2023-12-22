@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML-full"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,32 +11,56 @@
         #your-svg-container {
         display: inline-block;
         width: 800px;
-        /* Other styles */
         }
-        #plot-container {
+        #plot-container,
+        #radar-plot,
+        #metric-description,
+        #metric-selector,
+        #plot-criteria {
+            width: 100%;
             width: 800px; /* Same as SVG width */
             margin-left: 40px;
             margin-right: auto;
         }
-        #plot-title {
-            text-align: left;
-            margin-top: 60px;
+        #word-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
+            gap: 10px;
+            margin-top: 20px; /* Adjusted margin */
+        }
+        @media (max-width: 768px) {
+        #plot-title,
+        #radar-plot,
+        #plot-subtitle,
+        #metric-description,
+        #plot-criteria{
+            font-size: smaller;
+        }
 
+        .btn-group button {
+            padding: 1rem 1rem; /* Smaller padding */
+            font-size: smaller; /* Smaller text */
         }
-        #plot-subtitle {
-            font-weight: normal;
-            font-size: 12pt;
+
+        #word-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
+            gap: 10px;
+            margin-top: 20px; /* Adjusted margin */
         }
+        
+        /* Increase the font size of the Y axis labels for better readability */
+        .y-axis-label {
+            font-size: larger;
+        }
+    }
         #sort-container {
             margin-left: 10px;
             text-align: right;
-            margin-top: 50px;
-        }
-        #tooltip {
-        font-size: 12px; /* Adjust this value as needed */
+            margin-top: 0px;
         }
         #sort-label {
-            margin-top: 50px;
+            margin-top: 0px;
         }
         #starplot-container {
             display: inline-flex;
@@ -44,18 +69,14 @@
             margin-left: 40px;
 
         }
+        
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
-            margin-left: 20px;
-            margin-top: 50px;
+            margin-left: 50px;
+            margin-top: 10px;
         }
-        #word-checkboxes {
-            margin-top: 100px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
+    
         body {
             background-color: #e8f4f8;
         }
@@ -76,7 +97,7 @@
         .toggle-container {
             display: inline-block;
             vertical-align: top; /* Adjust the vertical alignment */
-            margin-top: 60px;
+            margin-top: 20px;
             margin-right: 60px;
             /* Additional styling for the toggle, if needed */
         }
@@ -86,29 +107,50 @@
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="plot-container">
-        <h2 id="plot-title" style="text-align: left">What do their first buttons tell us about their future?</h2>
+        <h2 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h2>
         <h5 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
-            User filtering criteria:<br>
-            We excluded learners who logged more than 7 different buttons in their first week of collected data as they might have started learning buttons long before logging their data. 
-            We excluded learners who started logging their presses later than 2 months after they started their journey.
-            We excluded those who showed less thatn 50 interactions or than have been logging for less than 2 months.
-            The resulting dataset is composed of 307 pet learners.<br>
-            The black dot represents the average 
-            score for learners who included early the specific word. A word is classified as 'early' if it is within the learner's 
-            first 4 words. The other end of the line is the average score for learners who did not have the word introduced early. The size of the black dot indicates the word's 
-            popularity as an early button.</h5>
+            <li>The black dot represents the average 
+            score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
+            first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
+            popularity as an early button.</li></h5>
     </div>
-    <div id="metric" style="margin-left: 40px;">
-        <h6>Choose Metric:</h6>
+    <div id="metric-selector" style="display: flex; align-items: center;">
+        <div style= "margin-top:5px;margin-right:10px;">
+            <h6>Choose Metric:</h6>
+        </div>
+        <div id="metric-selector-ontainer" class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-dark" data-metric="rate"> Rate</button>
+            <button type="button" class="btn btn-outline-dark" data-metric="ratio">Multi-buttons ratio</button>
+            <button type="button" class="btn btn-outline-dark" data-metric="consistency">Consistency</button>
+            <button type="button" class="btn btn-outline-dark" data-metric="buttons">Buttons</button>
+            <button type="button" class="btn btn-outline-dark" data-metric="entropy">Entropy</button>
+        </div>
     </div>
-    <div id="metric-selector-container" class="btn-group" role="group" style="margin-left: 40px;">
-        <button type="button" class="btn btn-outline-dark" data-metric="rate"> Interactions/Day</button>
-        <button type="button" class="btn btn-outline-dark" data-metric="ratio">Multi-button Interactions</button>
-        <button type="button" class="btn btn-outline-dark" data-metric="consistency">Consistency</button>
-        <button type="button" class="btn btn-outline-dark" data-metric="buttons">Buttons Available</button>
-    </div>
+    <div id="metric-description" style="text-align: left; margin-top: 10px;font-size: 11pt;">
+        <div id="description-rate" class="metric-description" style="display: none;">
+                    Average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
+            </div>
+            <div id="description-ratio" class="metric-description" style="display: none;">
+                    Out of all the learner's interactions the ratio of them who used two or more different words.<br> Formula: \( \frac{\text{Number of multi-button interactions}}{\text{Number of interactions}} \)
+            </div>
+            <div id="description-consistency" class="metric-description" style="display: none;">
+                Proportion of days has the learner been active since its first first press until its last press.<br> Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
+            </div>
+            <div id="description-buttons" class="metric-description" style="display: none;">
+                Average number of buttons at the time of data collection .<br>Formula:  \( \text{mean(Buttons Available)} \)
+            </div>
+            <div id="description-entropy" class="metric-description" style="display: none;">
+                <!-- Your MathJax formula for 'rate' -->
+                The sequence of buttons pressed along a day can be used to compute it's entropy \(\text{H}\), follwoing the formula:<br> Formula:  \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\) <br>where: 
+                \( p(x_i) \) is the probability of pressing button \( i \),
+                \( n \) is the number of buttons available,
+                and \( p(\text{no press}) \) is the probability of not pressing any button.
+                
+            </div>
+            
+</div>
     <div class="controls-container">
-        <div class="sort-group" style="display: flex; align-items: center; margin-left: 20px;">
+        <div class="sort-group" style="display: flex; align-items: center;">
             <div id="sort-label">
                 <h6>Sort by:</h6>
             </div>
@@ -126,18 +168,30 @@
     </div>    
     <div id="your-svg-container"></div>
     <!-- Star Plot Section -->
-    <div style="display: inline-flex;">
-        <div id="starplot-container">
-            <h3>Word Comparison</h3>
+    <div id="radar-plot">
+    <h3>Word Comparison</h3>
             <h6>Select two words to compare them accross all metrics</h6>
-
-            <!-- Star Plot SVG will be appended here -->
-        </div>
+    </div>
+    <div style="display: inline-flex;">
         <div id="word-list-container">
             <div id="word-checkboxes">
                 <!-- Checkboxes will be added here dynamically -->
             </div>
         </div>
+        <div id="starplot-container">
+            
+
+            <!-- Star Plot SVG will be appended here -->
+        </div>
+        
+    </div>
+    <div id="plot-criteria">
+        <h5  style="text-align: left; font-weight: normal ;font-size: 11pt">
+            User filtering criteria:<br>
+            <li>We excluded learners who logged more than 7 different buttons in their first week of collected data as they might started learning long before logging their data.</li>
+            <li>We excluded learners who started logging their presses later than 2 months after they started their journey.</li>
+            <li>The resulting dataset is composed of 307 pet learners.</li>        
+           </h5>
     </div>
     <script src="scriptIndividual.js" id="data-script"></script>
     </body>

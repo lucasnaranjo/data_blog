@@ -1,19 +1,21 @@
-
+let svgWidth = document.getElementById('your-svg-container').clientWidth;
+let svgHeight = svgWidth * 0.50; // Maintain aspect ratio, e.g., 3:4
 let maxPopularity, minPopularity;
 let originalData, groupedData;
 let useGroupedData = false; // State of the toggle
 d3.select("#your-svg-container").selectAll("*").remove();
+let currentSortCriteria = 'popularity'; // Default sorting criteria
+
+
 
 // Define dimensions and margins
-const width = 800; // Adjust as needed
-const height = 600; // Adjust as needed
+const width = svgWidth; // Adjust as needed
+const height = svgHeight; // Adjust as needed
 const margin = { top: 20, right: 20, bottom: 30, left: 60 }; // Adjust as needed
-const metricDescriptions = {
-    "rate": "Average interactions per day, excluding those wich contain the word of interest.",
-    "ratio": "Out of all the learner's interactions the ratio of them who used 2 or more different words.",
-    "consistency": "What proportion of days has the learner been active since its first first press until it's last press.",
-    "buttons": "On average, how many different words does the learner have available."
-};
+// Calculate the y position of the x-axis label
+const xAxisLabelYPosition = height - margin.bottom +25; // 20 is the additional offset, adjust as needed
+
+
 
 // Define a radius scale if needed
 const scaleRadius = d => Math.sqrt(d); // Adjust the scale function as needed
@@ -21,26 +23,27 @@ const scaleRadius = d => Math.sqrt(d); // Adjust the scale function as needed
 // Create SVG canvas
 const svg = d3.select('#your-svg-container')
     .append('svg')
-    .attr('width', width)
-    .attr('height', height);
+    .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`)
+    .attr('preserveAspectRatio', 'xMinYMin meet');
+const stripesGroup = svg.append("g").attr("class", "stripes-group");
+const linesGroup = svg.append("g").attr("class", "lines-group");
+const circlesGroup = svg.append("g").attr("class", "circles-group");
+// Append x-axis to SVG
+const xAxisGroup = svg.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${height - margin.bottom})`);
 
+// Placeholder for x-axis label
+const xAxisLabel = svg.append('text')
+    .attr('class', 'x-axis-label')
+    .attr('transform', `translate(${width / 2}, ${xAxisLabelYPosition})`) // Use the calculated y position
+    .attr('text-anchor', 'middle')
+    .style('font-size', '11px')
+    .text(''); // Initially empty
 // Define scales
 let xScale = d3.scaleLinear().range([margin.left, width - margin.right]);
 let yScale;
 
-function updateStarPlot(selectedWords, originalData) {
-    // Clear existing stars
-    starSvg.selectAll('path').remove();
-
-    // Colors for the stars - you can expand or change this array as needed
-    const colors = ['blue', 'red', 'green', 'orange', 'purple'];
-
-    // Draw a star for each selected word
-    selectedWords.forEach((word, index) => {
-        let color = colors[index % colors.length]; // Cycle through colors
-        drawStar(word, color);
-    });
-}
 
 
 // Load CSV data
@@ -58,71 +61,58 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
         d.consistency_absent = +d.consistency_absent;
         d.buttons_present = +d.buttons_present;
         d.buttons_absent = +d.buttons_absent;
+        d.entropy_present = +d.entropy_present;
+        d.entropy_absent = +d.entropy_absent;
         d.popularity = +d.popularity;
     });
     yScale = d3.scaleBand()
         .domain(originalData.map(d => d.word))
         .range([margin.top, height - margin.bottom])
         .padding(0.1);
-    // Draw alternating stripes for background
-    svg.selectAll('.stripe')
-       .data(originalData)
-       .enter().append('rect')
-       .attr('class', 'stripe')
-       .attr('x', margin.left)
-       .attr('y', d => yScale(d.word))
-       .attr('width', width - margin.left - margin.right)
-       .attr('height', yScale.bandwidth())
-       .attr('fill', (d, i) => i % 2 === 0 ? 'white' : '#e8f4f8');  // Light blue for even bands
-        drawStar(selectedWords[0], 'blue');
-        drawStar(selectedWords[1], 'red');
-
+ 
     updateVisualization('rate', false);// Initial call with default metric
 
     // Generate word list with checkboxes
     const wordListContainer = d3.select('#word-checkboxes');
+    wordListContainer.selectAll('*').remove(); // Clear existing content
+
     originalData.forEach(d => {
         wordListContainer.append('div')
             .attr('class', 'word-checkbox')
-            .html(`<input type="checkbox" id="word-${d.word}" name="word" value="${d.word}">
-                   <label for="word-${d.word}">${d.word}</label>`);
+            .append('label')
+            .attr('for', `word-${d.word}`)
+            .text(d.word)
+            .style("cursor", "pointer") // Change cursor to pointer on hover
+            .on('click', () => handleWordSelection(d.word));
     });
-    // Attach event listeners after checkboxes are created
-    d3.selectAll('.word-checkbox input').on('change', function() {
-        const word = this.value;
+    // Handle word selection
+    function handleWordSelection(word) {
+        const index = selectedWords.indexOf(word);
     
-        // Update the selectedWords array based on the checkbox state
-        if (this.checked) {
-            selectedWords.push(word);
+        if (index >= 0) {
+            // If the word is already selected, remove it from the selection
+            selectedWords.splice(index, 1);
+            delete colorMap[word]; // Remove the color mapping for the deselected word
+
         } else {
-            selectedWords = selectedWords.filter(w => w !== word);
+            // Add new word to selection
+            if (selectedWords.length >= 2) {
+                // If there are already two selected words, remove the first one
+                delete colorMap[selectedWords[0]];
+
+                selectedWords.shift();
+            }
+            colorMap[word] = colors[colorIndex % colors.length];
+            colorIndex++;
+            selectedWords.push(word);
         }
     
-        // Uncheck all checkboxes except the last two selected
-        d3.selectAll('.word-checkbox input').each(function() {
-            let checkBox = d3.select(this);
-            let word = checkBox.property('value');
-            if (selectedWords.includes(word)) {
-                // Only the last two words in the selectedWords array should remain checked
-                if (selectedWords.indexOf(word) < selectedWords.length - 2) {
-                    checkBox.property('checked', false);
-                    selectedWords = selectedWords.filter(w => w !== word); // Remove unchecked word
-                }
-            }
-        });
-    
-        // Update the star plot
         updateStarPlot(selectedWords, originalData);
-            // Calculate max and min popularity here
-    let maxPopularity = d3.max(groupedData, d => d.popularity);
-    let minPopularity = d3.min(groupedData, d => d.popularity);
+        updateWordListStyle(selectedWords);
+    }
 
-    console.log("Max popularity:", maxPopularity, "Min popularity:", minPopularity);
-
-    // Now call drawLegend
-    drawLegend(svg, maxPopularity, minPopularity, width, height, scaleRadius);
-
-    });
+    // Attach event listeners after checkboxes are created
+ 
     
 
 });
@@ -131,8 +121,9 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
 d3.select('#toggle-group').on('change', function() {
     useGroupedData = d3.select(this).property('checked');
     console.log("Toggle changed: ", useGroupedData); // Added console log
-
     updateVisualization(currentMetric, useGroupedData);
+    sortBy(currentSortCriteria, currentMetric);
+
 });
 
 // Load CSV data
@@ -156,31 +147,21 @@ d3.csv("mean_scores_grouped_df.csv").then(loadedData => {
         .domain(groupedData.map(d => d.word))
         .range([margin.top, height - margin.bottom])
         .padding(0.1);
-    // Draw alternating stripes for background
-    svg.selectAll('.stripe')
-       .data(groupedData)
-       .enter().append('rect')
-       .attr('class', 'stripe')
-       .attr('x', margin.left)
-       .attr('y', d => yScale(d.word))
-       .attr('width', width - margin.left - margin.right)
-       .attr('height', yScale.bandwidth())
-       .attr('fill', (d, i) => i % 2 === 0 ? 'white' : '#e8f4f8');  // Light blue for even bands
-
-    // Calculate max and min popularity here
-    let maxPopularity = d3.max(loadedData, d => d.popularity);
-    let minPopularity = d3.min(loadedData, d => d.popularity);
-
-    console.log("Max popularity:", maxPopularity, "Min popularity:", minPopularity);
-
-    // Now call drawLegend
-    drawLegend(svg, maxPopularity, minPopularity, width, height);
-
+    
     
 
     });
     
-
+// Event listener for the metric buttons
+d3.selectAll('[data-metric]').on('click', function() {
+    let selectedMetric = d3.select(this).attr('data-metric');
+    // Hide all metric descriptions
+    d3.selectAll('.metric-description').style("display", "none");
+    d3.select(`#description-${selectedMetric}`).style("display", "block");
+    // Update the visualization based on the selected metric
+    updateVisualization(selectedMetric, useGroupedData);
+    setActiveButton(selectedMetric);
+});
 
 // Function to update visualization based on the selected metric
 function updateVisualization(metric, useGroupData) {
@@ -188,11 +169,37 @@ function updateVisualization(metric, useGroupData) {
         console.error("Data not loaded properly.");
         return;
     }
-    let currentData = useGroupData ? groupedData : originalData;
+    const currentData = useGroupData ? groupedData : originalData;
+    yScale.domain(currentData.map(d => useGroupData ? d.word_category : d.word));
+    // Define metric labels
+    const metricAxisLabels = {
+        'rate': 'Average Number of Interactions per Day',
+        'ratio': 'Ratio of multi-button interactions',
+        'consistency': 'Ratio of active days)',
+        'buttons': 'Buttons Available',
+        'entropy': 'H (bits)'
+    };
+
+    // Update x-axis label
+    xAxisLabel.text(metricAxisLabels[metric] || '');
+    
+    stripesGroup.selectAll('.stripe')
+        .data(currentData)
+        .join('rect')
+        .attr('class', 'stripe')
+        .attr('x', margin.left)
+        .attr('y', d => yScale(useGroupData ? d.word_category : d.word))
+        .attr('width', width - margin.left - margin.right)
+        .attr('height', yScale.bandwidth())
+        .attr('fill', (d, i) => i % 2 === 0 ? 'white' : '#e8f4f8');
+
     let metricPresent = metric + '_present';
     let metricAbsent = metric + '_absent';
+       // Draw alternating stripes for background
+    
     // Update yScale domain based on the current dataset
-    yScale.domain(currentData.map(d => useGroupData ? d.word_category : d.word));
+        // Clear existing stripes and other elements
+
     // Update xScale domain
     const minScore = d3.min(currentData, d => Math.min(d[metricPresent], d[metricAbsent]));
     const maxScore = d3.max(currentData, d => Math.max(d[metricPresent], d[metricAbsent]));
@@ -263,7 +270,12 @@ function updateVisualization(metric, useGroupData) {
                      .transition()
                      .duration(750)
                      .call(yAxis);
-              }           
+
+    let maxPopularity = d3.max(currentData, d => d.popularity);
+    let minPopularity = d3.min(currentData, d => d.popularity);
+    drawLegend(svg, maxPopularity, minPopularity, width, height, scaleRadius);
+
+}           
 
 
 
@@ -281,8 +293,8 @@ function setActiveButton(selectedMetric) {
 
 
 
-
 function sortBy(criteria, metric) {
+    currentSortCriteria = criteria
     let currentData = useGroupedData ? groupedData : originalData;
     if (criteria === 'popularity') {
         currentData.sort((a, b) => d3.descending(a.popularity, b.popularity));
@@ -290,7 +302,6 @@ function sortBy(criteria, metric) {
         let metricPresent = metric + '_present';
         currentData.sort((a, b) => d3.descending(a[metricPresent], b[metricPresent]));
     }
-
     // Update visualization with sorted data
     updateVisualization(currentMetric, useGroupedData);
 }
@@ -347,8 +358,8 @@ svg.append('g')
 //star plot
 
 // Assume two words are selected for comparison
-let selectedWords = ['treat','play']; // Replace with actual word selection logic
-let metrics = ['rate', 'ratio', 'consistency', 'buttons'];
+let selectedWords = []; // Replace with actual word selection logic
+let metrics = ['rate', 'ratio', 'consistency', 'buttons','entropy'];
 
 // Function to get metrics data for a word
 function getMetricsData(word) {
@@ -356,7 +367,8 @@ function getMetricsData(word) {
     rate: d.rate_norm,
     ratio: d.ratio_norm,
     consistency: d.consistency_norm,
-    buttons: d.buttons_norm,    
+    buttons: d.buttons_norm, 
+    entropy: d.entropy_norm
   }))[0];
 }
 
@@ -371,10 +383,12 @@ const starSvg = d3.select('#starplot-container')
   .attr('width', starPlotWidth)
   .attr('height', starPlotHeight);
 
-// Create a radial scale
+const buffer = 0.3; // Example buffer value, adjust as needed
+
+  // Adjust the radial scale to include the buffer
 const radialScale = d3.scaleLinear()
-  .domain([0, 1]) // Assuming metrics are normalized between 0 and 1
-  .range([0, starRadius]);
+    .domain([-buffer, 1 + buffer]) // Extend the domain beyond 0 and 1
+    .range([0, starRadius]);
 
 // Draw axes for star plot
 metrics.forEach((metric, i) => {
@@ -404,6 +418,27 @@ function polarToCartesian(centerX, centerY, radius, angleInRadians) {
 }
 
 // Function to draw the star for a word
+let colorMap = {}; // Object to store colors for each word
+const colors = ['blue', 'green', 'orange']; // Your colors
+let colorIndex = 0; // To track which color to assign next
+
+function updateStarPlot(selectedWords, originalData) {
+    // Clear existing stars
+    starSvg.selectAll('path').remove();
+
+    // Assign colors and draw stars for each selected word
+    selectedWords.forEach(word => {
+        if (!colorMap[word]) {
+            // Assign a color and move to the next color
+            colorMap[word] = colors[colorIndex % colors.length];
+            colorIndex++;
+        }
+        drawStar(word, colorMap[word]);
+    });
+}
+
+
+// Function to draw the star for a word
 function drawStar(word, color) {
   let metricsData = getMetricsData(word);
   let points = metrics.map((metric, i) => {
@@ -431,10 +466,8 @@ function showTooltip(selectedMetric, element) {
     tooltip
         .style("display", "block")
         .html(description)
-        .style("background-color", "#343a40") // Bootstrap darker grey color
-        .style("color", "white") // White text for better contrast
+        .style("color", "black") 
         .style("padding", "10px")
-        .style("border-radius", "5px");
 
     // Align with the left border of the leftmost button
     let leftPosition = metricSelectorContainer.left + window.scrollX;
@@ -452,13 +485,7 @@ function showTooltip(selectedMetric, element) {
 
 // Event listener for the metric selector
 let currentMetric = 'rate'; // Default metric
-d3.selectAll('[data-metric]').on('click', function() {
-    let selectedMetric = d3.select(this).attr('data-metric');
-    showTooltip(selectedMetric, this); // Pass 'this' as the button element
-    currentMetric = selectedMetric; // Update the current metric
-    updateVisualization(currentMetric, useGroupedData); // Pass the grouped data state
-    setActiveButton(selectedMetric);
-});
+
 
 
 
@@ -474,16 +501,15 @@ d3.select("body").on("click", function(event) {
 
 
 
-
-// Function to draw the legend
-// Function to draw the legend
 // Function to draw the legend
 function drawLegend(svg, maxPopularity, minPopularity, width, height) {
+    svg.select(".legend").remove();
+
     console.log("Drawing legend with maxPopularity:", maxPopularity, "and minPopularity:", minPopularity);
 
     const legendGroup = svg.append("g")
                            .attr("class", "legend")
-                           .attr("transform", `translate(100, 50)`); // Adjusted to position at top left
+                           .attr("transform", `translate(100,20)`); // Adjusted to position at top left
 
     // Add legend title
     legendGroup.append("text")
@@ -520,3 +546,23 @@ function drawLegend(svg, maxPopularity, minPopularity, width, height) {
 
     console.log("Legend drawn.");
 }
+
+
+function updateWordListStyle(selectedWords) {
+    // Reset all labels to default style
+    d3.selectAll('.word-checkbox label').style("font-weight", "normal").style("color", "black");
+
+    // Update style for selected words
+    selectedWords.forEach(word => {
+        if (!colorMap[word]) {
+            // Assign a color and move to the next color
+            colorMap[word] = colors[colorIndex % colors.length];
+            colorIndex++;
+        }
+        d3.select(`label[for='word-${word}']`).style("font-weight", "bold").style("color", colorMap[word]);
+    });
+}
+
+
+updateWordListStyle(selectedWords);
+updateStarPlot(selectedWords);
