@@ -137,11 +137,12 @@
                 Proportion of days has the learner been active since its first first press until its last press.<br> Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
             </div>
             <div id="description-buttons" class="metric-description" style="display: none;">
-                Average number of buttons at the time of data collection .<br>Formula:  \( \text{mean(Buttons Available)} \)
+                Average number of buttons at the time of data collection .<br>Formula:  \( \frac{\sum_{i=1}^{n} \text{Buttons}_i}{n} \)
+                
             </div>
             <div id="description-entropy" class="metric-description" style="display: none;">
                 <!-- Your MathJax formula for 'rate' -->
-                The sequence of buttons pressed along a day can be used to compute it's entropy \(\text{H}\), follwoing the formula:<br> Formula:  \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\) <br>where: 
+                The sequence of buttons pressed along a day can be used to compute it's entropy \(\text{H}\).<br> Formula:  \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\) <br>where: 
                 \( p(x_i) \) is the probability of pressing button \( i \),
                 \( n \) is the number of buttons available,
                 and \( p(\text{no press}) \) is the probability of not pressing any button.
@@ -187,10 +188,11 @@
     </div>
     <div id="plot-criteria">
         <h5  style="text-align: left; font-weight: normal ;font-size: 11pt">
-            User filtering criteria:<br>
-            <li>We excluded learners who logged more than 7 different buttons in their first week of collected data as they might started learning long before logging their data.</li>
-            <li>We excluded learners who started logging their presses later than 2 months after they started their journey.</li>
-            <li>The resulting dataset is composed of 307 pet learners.</li>        
+            We only included learners who: :<br>
+            <li>Had 7 different buttons or less in their first week of collected data as they might started learning long before logging their data.</li>
+            <li>Started logging their presses at latest than 2 months after they started their learning.</li>
+            <li>Logged for at least 60 days.</li>        
+            <li>The resulting dataset is composed of 178 pet learners.</li>        
            </h5>
     </div>
     <script src="scriptIndividual.js" id="data-script"></script>
