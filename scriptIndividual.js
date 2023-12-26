@@ -1,5 +1,5 @@
 let svgWidth = document.getElementById('your-svg-container').clientWidth;
-let svgHeight = svgWidth ; // Maintain aspect ratio, e.g., 3:4
+let svgHeight = 0.6*svgWidth ; // Maintain aspect ratio, e.g., 3:4
 let maxPopularity, minPopularity;
 let originalData, groupedData;
 let useGroupedData = false; // State of the toggle

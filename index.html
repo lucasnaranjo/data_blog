@@ -8,19 +8,10 @@
     <title>D3 Visualization</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
-        #your-svg-container {
-        display: block; /* changed from inline-block */
-        width: 100%; /* Use full width of the container */
-        max-width: 800px; /* Maximum width can be 800px or any other value */
-        }   
-        #plot-container,
-        #radar-plot,
-        #metric-description,
-        #metric-selector,
-        #plot-criteria,
-        #btn-group button {
-  margin-left: 10px;
-  margin-right: auto;
+        #your-svg-container, #plot-container, #metric-selector, #metric-description, #plot-criteria, .controls-container, #radar-plot {
+    width: 100%; /* Use the full width for small screens */
+    max-width: 800px; /* Maximum width of the content */
+    margin: 0 auto; /* Centers the content */
 }
         #word-checkboxes {
             display: grid;
@@ -36,9 +27,6 @@
         #plot-criteria{
             font-size: smaller;
         }
-
-      
-
         #word-checkboxes {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
@@ -52,7 +40,6 @@
         }
     }
         #sort-container {
-            margin-left: 10px;
             text-align: right;
             margin-top: 0px;
         }
@@ -66,18 +53,21 @@
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
-            margin-left: 10px;
             margin-top: 10px;
         }
-    
-        body {
-            background-color: #e8f4f8;
-        }
+        body, html {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #e8f4f8;
+
+}
         .controls-container {
         display: flex;
         justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
         align-items: center; /* Aligns items vertically in the center */
-        margin-left: 10px; /* Align with the left side of the plot container */
         max-width: 768px;        }
 
         .sort-group {
@@ -89,7 +79,6 @@
             display: inline-block;
             vertical-align: top; /* Adjust the vertical alignment */
             margin-top: 20px;
-            margin-left: 10px; /* Align with the left side of the plot container */
 
             /* Additional styling for the toggle, if needed */
         }
