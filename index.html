@@ -32,13 +32,13 @@
         #radar-plot,
         #plot-subtitle,
         #metric-description,
-        #plot-criteria{
+        #plot-criteria,
+        #btn-group button{
             font-size: smaller;
         }
 
         .btn-group button {
             padding: 1rem 1rem; /* Smaller padding */
-            font-size: smaller; /* Smaller text */
         }
 
         #word-checkboxes {
@@ -71,7 +71,7 @@
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
-            margin-left: 50px;
+            margin-left: 10px;
             margin-top: 10px;
         }
     
@@ -82,9 +82,8 @@
         display: flex;
         justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
         align-items: center; /* Aligns items vertically in the center */
-        margin-left: 40px; /* Align with the left side of the plot container */
-        /* Additional styling as needed */
-        }
+        margin-left: 10px; /* Align with the left side of the plot container */
+        max-width: 768px;        }
 
         .sort-group {
             display: flex;
@@ -111,7 +110,6 @@
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
             popularity as an early button.</li></h5>
     </div>
-    <div id="metric-selector" style="display: flex; align-items: center;">
         <div style= "margin-top:5px;margin-right:10px;">
             <h6>Choose Metric:</h6>
         </div>
@@ -122,7 +120,6 @@
             <button type="button" class="btn btn-outline-dark" data-metric="buttons">Buttons</button>
             <button type="button" class="btn btn-outline-dark" data-metric="entropy">Entropy</button>
         </div>
-    </div>
     <div id="metric-description" style="text-align: left; margin-top: 10px;font-size: 11pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
                     Average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
