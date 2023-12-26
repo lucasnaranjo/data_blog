@@ -9,19 +9,18 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
         #your-svg-container {
-        display: inline-block;
-        width: 800px;
-        }
+        display: block; /* changed from inline-block */
+        width: 100%; /* Use full width of the container */
+        max-width: 800px; /* Maximum width can be 800px or any other value */
+        }   
         #plot-container,
         #radar-plot,
         #metric-description,
         #metric-selector,
         #plot-criteria {
-            width: 100%;
-            width: 800px; /* Same as SVG width */
-            margin-left: 40px;
-            margin-right: auto;
-        }
+  margin-left: auto;
+  margin-right: auto;
+}
         #word-checkboxes {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
