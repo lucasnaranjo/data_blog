@@ -8,6 +8,9 @@
     <title>D3 Visualization</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
+        * {
+    box-sizing: border-box;
+}
         #your-svg-container, #plot-container, #metric-selector, #metric-description, #plot-criteria, .controls-container, #radar-plot {
     width: 95%; /* Use the full width for small screens */
     max-width: 800px; /* Maximum width of the content */
@@ -55,7 +58,9 @@
             margin-top: 10px;
         }
         body, html {
+            height: 100%;
     margin: 0;
+    padding: 0; /* Reset default padding */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -71,13 +76,14 @@
 
         .sort-group {
             display: flex;
-            align-items: center; /* Ensure vertical alignment of elements inside sort group */
+            align-items: center;
+            margin-top: 10px;
+ /* Ensure vertical alignment of elements inside sort group */
         }
 
         .toggle-container {
             display: inline-block;
             vertical-align: top; /* Adjust the vertical alignment */
-            margin-top: 20px;
 
             /* Additional styling for the toggle, if needed */
         }
@@ -88,11 +94,11 @@
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="plot-container">
         <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>
-        <h5 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
+        <p id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
             <li>The black dot represents the average 
             score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
-            popularity as an early button.</li><li>Choose among the 5 following metrics.</li></h5>
+            popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
     <div id="metric-selector">
         <div id="btn-group button" class="btn-group" role="group">
@@ -102,7 +108,7 @@
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="buttons">Buttons</button>
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="entropy">Entropy</button>
         </div>
-    <div id="metric-description" style="text-align: left; margin-top: 10px;font-size: 11pt;">
+    <div id="metric-description" style="text-align: left; margin-top: 5px;font-size: 10pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
             <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
             </div>
@@ -132,7 +138,7 @@
             <div id="sort-label">
                 <h6>Sort by:</h6>
             </div>
-            <div id="sort-container" class="btn-group" role="group">
+            <div id="sort-container" class="btn-group" role="group" style= "margin-left:5px;">
                 <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-popularity">Popularity</button>
                 <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-metric">Metric</button>
             </div>
