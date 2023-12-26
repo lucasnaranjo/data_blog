@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
         #your-svg-container, #plot-container, #metric-selector, #metric-description, #plot-criteria, .controls-container, #radar-plot {
-    width: 100%; /* Use the full width for small screens */
+    width: 95%; /* Use the full width for small screens */
     max-width: 800px; /* Maximum width of the content */
     margin: 0 auto; /* Centers the content */
 }
@@ -20,7 +20,6 @@
             margin-top: 20px; /* Adjusted margin */
         }
         @media (max-width: 768px) {
-        #plot-title,
         #radar-plot,
         #plot-subtitle,
         #metric-description,
@@ -88,7 +87,7 @@
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="plot-container">
-        <h2 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h2>
+        <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>
         <h5 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
             <li>The black dot represents the average 
             score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
@@ -170,7 +169,7 @@
             <li>Had 7 different buttons or less in their first week of collected data as they might started learning long before logging their data.</li>
             <li>Started logging their presses at latest than 2 months after they started their learning.</li>
             <li>Logged for at least 60 days.</li>        
-            <li>The resulting dataset is composed of 178 pet learners.</li>        
+            <br>The resulting dataset is composed of 178 pet learners.       
            </h5>
     </div>
     <script src="scriptIndividual.js" id="data-script"></script>
