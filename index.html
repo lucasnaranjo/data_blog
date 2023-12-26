@@ -8,10 +8,19 @@
     <title>D3 Visualization</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
-        #your-svg-container, #plot-container, #metric-selector, #metric-description, #plot-criteria, .controls-container, #radar-plot {
-    width: 95%; /* Use the full width for small screens */
-    max-width: 800px; /* Maximum width of the content */
-    margin: 0 auto; /* Centers the content */
+        #your-svg-container {
+        display: block; /* changed from inline-block */
+        width: 100%; /* Use full width of the container */
+        max-width: 800px; /* Maximum width can be 800px or any other value */
+        }   
+        #plot-container,
+        #radar-plot,
+        #metric-description,
+        #metric-selector,
+        #plot-criteria,
+        #btn-group button {
+  margin-left: 10px;
+  margin-right: auto;
 }
         #word-checkboxes {
             display: grid;
@@ -20,12 +29,16 @@
             margin-top: 20px; /* Adjusted margin */
         }
         @media (max-width: 768px) {
+        #plot-title,
         #radar-plot,
         #plot-subtitle,
         #metric-description,
         #plot-criteria{
             font-size: smaller;
         }
+
+      
+
         #word-checkboxes {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
@@ -39,6 +52,7 @@
         }
     }
         #sort-container {
+            margin-left: 10px;
             text-align: right;
             margin-top: 0px;
         }
@@ -52,21 +66,18 @@
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
+            margin-left: 10px;
             margin-top: 10px;
         }
-        body, html {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background-color: #e8f4f8;
-
-}
+    
+        body {
+            background-color: #e8f4f8;
+        }
         .controls-container {
         display: flex;
         justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
         align-items: center; /* Aligns items vertically in the center */
+        margin-left: 10px; /* Align with the left side of the plot container */
         max-width: 768px;        }
 
         .sort-group {
@@ -78,6 +89,7 @@
             display: inline-block;
             vertical-align: top; /* Adjust the vertical alignment */
             margin-top: 20px;
+            margin-left: 10px; /* Align with the left side of the plot container */
 
             /* Additional styling for the toggle, if needed */
         }
@@ -87,7 +99,7 @@
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="plot-container">
-        <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>
+        <h2 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h2>
         <h5 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
             <li>The black dot represents the average 
             score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
@@ -169,7 +181,7 @@
             <li>Had 7 different buttons or less in their first week of collected data as they might started learning long before logging their data.</li>
             <li>Started logging their presses at latest than 2 months after they started their learning.</li>
             <li>Logged for at least 60 days.</li>        
-            <br>The resulting dataset is composed of 178 pet learners.       
+            <li>The resulting dataset is composed of 178 pet learners.</li>        
            </h5>
     </div>
     <script src="scriptIndividual.js" id="data-script"></script>
