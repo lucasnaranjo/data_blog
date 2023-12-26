@@ -104,10 +104,9 @@
             <li>The black dot represents the average 
             score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
-            popularity as an early button.</li></h5>
+            popularity as an early button.</li><li>Choose among the 5 following metrics.</li></h5>
     </div>
-            <h6>Choose Metric:</h6>
-        </div>
+    <div id="metric-selector">
         <div id="btn-group button" class="btn-group" role="group">
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="rate"> Rate</button>
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="ratio">Ratio</button>
@@ -117,27 +116,28 @@
         </div>
     <div id="metric-description" style="text-align: left; margin-top: 10px;font-size: 11pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
-                    Average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
+            <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
             </div>
             <div id="description-ratio" class="metric-description" style="display: none;">
-                    Out of all the learner's interactions the ratio of them who used two or more different words.<br> Formula: \( \frac{\text{Number of multi-button interactions}}{\text{Number of interactions}} \)
+                <strong>Multi-Button Interaction Ratio: </strong>out of all the learner's interactions the ratio of them who used two or more different words.<br> Formula: \( \frac{\text{Number of multi-button interactions}}{\text{Number of interactions}} \)
             </div>
             <div id="description-consistency" class="metric-description" style="display: none;">
-                Proportion of days has the learner been active since its first first press until its last press.<br> Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
+                <strong>Consistency over time: </strong>proportion of days has the learner been active since its first first press until its last press.<br> Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
             </div>
             <div id="description-buttons" class="metric-description" style="display: none;">
-                Average number of buttons at the time of data collection .<br>Formula:  \( \frac{\sum_{i=1}^{n} \text{Buttons}_i}{n} \)
+                <strong>Buttons Available: </strong>average number of buttons at the time of data collection .<br>Formula:  \( \frac{\sum_{i=1}^{n} \text{Buttons}_i}{n} \)
                 
             </div>
             <div id="description-entropy" class="metric-description" style="display: none;">
-                <!-- Your MathJax formula for 'rate' -->
-                The sequence of buttons pressed along a day can be used to compute it's entropy \(\text{H}\).<br> Formula:  \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\) <br>where: 
+                <strong>Average Daily Entropy: </strong>
+                the sequence of buttons pressed along a day can be used to compute it's entropy \(\text{H}\).<br> Formula:  \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\) <br>where: 
                 \( p(x_i) \) is the probability of pressing button \( i \),
                 \( n \) is the number of buttons available,
                 and \( p(\text{no press}) \) is the probability of not pressing any button.
                 
             </div>
             
+</div>
 </div>
     <div class="controls-container">
         <div class="sort-group" style="display: flex; align-items: center;">
