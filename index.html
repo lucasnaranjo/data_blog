@@ -8,42 +8,28 @@
     <title>D3 Visualization</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
-        #your-svg-container {
-        display: block; /* changed from inline-block */
-        width: 100%; /* Use full width of the container */
-        max-width: 800px; /* Maximum width can be 800px or any other value */
-        }   
-        #plot-container,
-        #radar-plot,
-        #metric-description,
-        #metric-selector,
-        #plot-criteria,
-        #btn-group button {
-  margin-left: 10px;
-  margin-right: auto;
+        * {
+    box-sizing: border-box;
+}
+        #your-svg-container, #plot-container, #metric-selector, #metric-description, #plot-criteria, .controls-container, #radar-plot {
+    width: 95%; /* Use the full width for small screens */
+    max-width: 800px; /* Maximum width of the content */
+    margin: 0 auto; /* Centers the content */
+    padding: 0 auto; /* Add some padding inside the containers */
+
 }
         #word-checkboxes {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
-            gap: 10px;
+            gap: 0;
             margin-top: 20px; /* Adjusted margin */
         }
         @media (max-width: 768px) {
-        #plot-title,
         #radar-plot,
         #plot-subtitle,
         #metric-description,
         #plot-criteria{
             font-size: smaller;
-        }
-
-      
-
-        #word-checkboxes {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
-            gap: 10px;
-            margin-top: 20px; /* Adjusted margin */
         }
         
         /* Increase the font size of the Y axis labels for better readability */
@@ -52,7 +38,6 @@
         }
     }
         #sort-container {
-            margin-left: 10px;
             text-align: right;
             margin-top: 0px;
         }
@@ -66,10 +51,8 @@
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
-            margin-left: 10px;
             margin-top: 10px;
         }
-    
         body, html {
     margin: 0;
     padding: 0; /* Reset default padding */
@@ -80,24 +63,22 @@
     background-color: #e8f4f8;
 
 }
-        }
         .controls-container {
         display: flex;
         justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
         align-items: center; /* Aligns items vertically in the center */
-        margin-left: 10px; /* Align with the left side of the plot container */
         max-width: 768px;        }
 
         .sort-group {
             display: flex;
-            align-items: center; /* Ensure vertical alignment of elements inside sort group */
+            align-items: center;
+            margin-top: 10px;
+ /* Ensure vertical alignment of elements inside sort group */
         }
 
         .toggle-container {
             display: inline-block;
             vertical-align: top; /* Adjust the vertical alignment */
-            margin-top: 20px;
-            margin-left: 10px; /* Align with the left side of the plot container */
 
             /* Additional styling for the toggle, if needed */
         }
@@ -107,12 +88,12 @@
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="plot-container">
-        <h2 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h2>
-        <h5 id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
+        <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>
+        <p id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
             <li>The black dot represents the average 
             score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
-            popularity as an early button.</li><li>Choose among the 5 following metrics.</li></h5>
+            popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
     <div id="metric-selector">
         <div id="btn-group button" class="btn-group" role="group">
@@ -122,7 +103,7 @@
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="buttons">Buttons</button>
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="entropy">Entropy</button>
         </div>
-    <div id="metric-description" style="text-align: left; margin-top: 10px;font-size: 11pt;">
+    <div id="metric-description" style="text-align: left; margin-top: 5px;font-size: 10pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
             <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
             </div>
@@ -152,7 +133,7 @@
             <div id="sort-label">
                 <h6>Sort by:</h6>
             </div>
-            <div id="sort-container" class="btn-group" role="group">
+            <div id="sort-container" class="btn-group" role="group" style= "margin-left:5px;">
                 <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-popularity">Popularity</button>
                 <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-metric">Metric</button>
             </div>
@@ -189,10 +170,11 @@
             <li>Had 7 different buttons or less in their first week of collected data as they might started learning long before logging their data.</li>
             <li>Started logging their presses at latest than 2 months after they started their learning.</li>
             <li>Logged for at least 60 days.</li>        
-            <li>The resulting dataset is composed of 178 pet learners.</li>        
+            <br>The resulting dataset is composed of 178 pet learners.       
            </h5>
     </div>
     <script src="scriptIndividual.js" id="data-script"></script>
     </body>
 </html>
+
 
