@@ -19,6 +19,7 @@
         #radar-plot-2,
         #starplot-container,
         #plot-container,
+        #figure-1,
         #metric-description
      {
             width: 99%; /* Use the full width for small screens */
@@ -43,7 +44,9 @@
         #plot-subtitle,
         #metric-description,
         #plot-criteria,
-        #word-checkboxes{
+        #word-checkboxes,
+        #figure-1
+        {
             font-size: smaller;
         }
         
@@ -67,9 +70,15 @@
             align-items: left;
             
         }
-        #plot-container,
-        #radar-plot-2 {
+        #plot-container {
             background-color: #AED6F1; /* Light grey background; adjust color as needed */
+            border-radius: 15px; /* Rounded corners */
+            padding: 0px; /* Padding around the content */
+            margin: auto; /* Center the wrapper horizontally */
+            max-width: 800px;
+        }
+        #radar-plot-2 {
+            background-color: rgb(126, 201, 206); /* Light grey background; adjust color as needed */
             border-radius: 15px; /* Rounded corners */
             padding: 0px; /* Padding around the content */
             margin: auto; /* Center the wrapper horizontally */
@@ -126,16 +135,18 @@
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="introduction">
-        <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>
-        <p id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
-            <li>The black dot represents the average 
-            score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
-            first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
-            popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
+        <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>  
     </div>
-    
-    <div id="metric-selector"  style="margin-top: 5px">
+    <div id="figure-1">
         <h5>Figure 1: Word Ranking by Score</h5>
+        <p id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 9pt">
+            <li>The dot indicates the average 
+            score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
+            first 4 words.</li><li>The end of the line is the average score for learners who did not have the word introduced early.</li> 
+            <li> Dot size indicates the word's 
+            popularity as an early button.</li>
+        </div>
+            <div id="metric-selector"  style="margin-top: 5px">
         <div id="btn-group button" class="btn-group" role="group">
             <button type="button" class="btn btn-outline-dark btn-sm rounded-pill " data-metric="rate"> Rate</button>
             <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="ratio">Ratio</button>
@@ -172,8 +183,6 @@
            
 </div>
     <div id="plot-container">
-    
-
     <div class="controls-container">
         <div class="sort-group" style="display: flex; align-items: center;">
             <div id="sort-label" >

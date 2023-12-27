@@ -540,7 +540,6 @@ function drawLegend(svg, maxPopularity, minPopularity, width, height) {
                .attr("cx", 10)
                .attr("cy", 50)
                .attr("r", scaleRadius(minPopularity))
-               .attr("fill", "grey");
 
     legendGroup.append("text")
                .attr("x", 30)
