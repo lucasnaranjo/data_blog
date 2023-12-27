@@ -376,7 +376,7 @@ function getMetricsData(word) {
 let starPlotWidth = document.getElementById('starplot-container').clientWidth;
 
 // Define star plot dimensions
-const starPlotHeight = starPlotWidth; // Maintain aspect ratio, e.g., 3:4
+const starPlotHeight = starPlotWidth*0.85; // Maintain aspect ratio, e.g., 3:4
 
 const starRadius = Math.min(starPlotWidth, starPlotHeight) / 3;
 const starCenter = { x: starPlotWidth / 2, y: starPlotHeight / 2 };
