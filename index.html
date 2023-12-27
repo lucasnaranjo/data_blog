@@ -27,23 +27,30 @@
             padding: 1 auto; /* Add some padding inside the containers */
 
 }
+.btn.active {
+    color: white; /* White text for better contrast */
+}
         #word-checkboxes {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
             gap: 0 auto;
             margin-top: 0 auto; /* Adjusted margin */
             margin-left: 0 auto; /* Adjusted margin */
+            font-size: large;
         }
         @media (max-width: 768px) {
         #radar-plot,
         #plot-subtitle,
         #metric-description,
-        #plot-criteria{
+        #plot-criteria,
+        #word-checkboxes,
+        #starplot-container{
             font-size: smaller;
         }
         
         /* Increase the font size of the Y axis labels for better readability */
-        .y-axis-label {
+        .y-axis-label
+         {
             font-size: larger;
         }
     }
@@ -55,27 +62,28 @@
             margin-top: 0px;
         }
         #starplot-container {
-            width: 60%; /* Full width of the parent container */
-            max-width: 300px; /* Adjust based on your design */
+            max-width: 400px; /* Adjust based on your design */
             margin: 0 auto; /* Center the container */
             flex-direction: column;
             align-items: left;
+            flex: 2;
             
         }
-        #plot-container {
+        #plot-container,
+        #radar-plot-2 {
             background-color: #AED6F1; /* Light grey background; adjust color as needed */
             border-radius: 15px; /* Rounded corners */
             padding: 0px; /* Padding around the content */
             margin: auto; /* Center the wrapper horizontally */
-    max-width: 800px;
-
-
+            max-width: 800px;
         }
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
-            margin-top: 10px;
-            align-items: left;
+            align-self: center;
+            text-align: right;
+            flex: 1.5;        
+
         }
         body, html {
             margin: 0;
@@ -84,13 +92,11 @@
             justify-content: flex-start; /* Align content from the top */
             align-items: left;
             flex-direction: column;
-            background-color: #e8f4f8;
+            background-color: #e8f4f8;}
 
-}
-
-.formula-small {
-    font-size: 0.8em; /* Smaller font size; adjust as needed */
-}
+        .formula-small {
+            font-size: 0.8em; /* Smaller font size; adjust as needed */
+        }
 
         .controls-container {
         display: flex;
@@ -129,7 +135,9 @@
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
             popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
-    <div id="metric-selector"  style="margin-top: 10px">
+    
+    <div id="metric-selector"  style="margin-top: 5px">
+        <h5>Figure 1: Word Ranking by Score</h5>
         <div id="btn-group button" class="btn-group" role="group">
             <button type="button" class="btn btn-outline-dark btn-sm rounded-pill " data-metric="rate"> Rate</button>
             <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="ratio">Ratio</button>
@@ -186,20 +194,15 @@
 </div>
     <!-- Star Plot Section -->
     <div id="radar-plot">
-    <h5>Word Comparison</h5>
+    <h5>Figure 2: Word Comparison</h5>
             <h6>Click on two words to compare them accross all metrics</h6>
     </div>
     <div id="radar-plot-2" style="display: inline-flex;">
         <div id="word-list-container">
             <div id="word-checkboxes">
-                <!-- Checkboxes will be added here dynamically -->
             </div>
         </div>
-        <div id="starplot-container">
-            
-
-            <!-- Star Plot SVG will be appended here -->
-        </div>
+        <div id="starplot-container">  </div>
         
     </div>
     <div id="plot-criteria">
