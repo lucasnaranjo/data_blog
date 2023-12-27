@@ -18,12 +18,13 @@
         #radar-plot,
         #radar-plot-2,
         #starplot-container,
-        #plot-container
+        #plot-container,
+        #metric-description
      {
-            width: 95%; /* Use the full width for small screens */
+            width: 100%; /* Use the full width for small screens */
             max-width: 800px; /* Maximum width of the content */
             margin: 0 auto; /* Centers the content */
-            padding: 0 auto; /* Add some padding inside the containers */
+            padding: 1 auto; /* Add some padding inside the containers */
 
 }
         #word-checkboxes {
@@ -64,6 +65,7 @@
             padding: 0px; /* Padding around the content */
             margin: auto; /* Center the wrapper horizontally */
     max-width: 800px;
+    border: 1px solid #1b6d71; 
 
 
         }
@@ -125,16 +127,7 @@
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
             popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
-    <div id="plot-container">
-    <div id="metric-selector"  style="margin-top: 10px">
-        <div id="btn-group button" class="btn-group" role="group">
-            <button type="button" class="btn btn-info btn-sm rounded-pill " data-metric="rate"> Rate</button>
-            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="ratio">Ratio</button>
-            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="consistency">Consistency</button>
-            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="buttons">Buttons</button>
-            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="entropy">Entropy</button>
-        </div>
-    <div id="metric-description" style="text-align: left; margin-top: 5px;font-size: 10pt;">
+    <div id="metric-description" style="text-align: left; margin-bottom: 5px;font-size: 11pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
             <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> <span class="formula-small">Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
         </span></div>
@@ -160,8 +153,18 @@
                 <span class="formula-small">and \(\ p(\text{no press}) \) is the probability of not pressing any button.</span>
             </div>
             
+            <div id="metric-selector"  style="margin-top: 10px">
+                <div id="btn-group button" class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill " data-metric="rate"> Rate</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="ratio">Ratio</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="consistency">Consistency</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="buttons">Buttons</button>
+                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="entropy">Entropy</button>
+                </div>
 </div>
-</div>
+    <div id="plot-container">
+    
+
     <div class="controls-container">
         <div class="sort-group" style="display: flex; align-items: center;">
             <div id="sort-label" >
