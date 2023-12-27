@@ -11,18 +11,24 @@
         * {
     box-sizing: border-box;
 }
-        #your-svg-container, #plot-container, #metric-selector, #metric-description, #plot-criteria, .controls-container, #radar-plot {
-    width: 95%; /* Use the full width for small screens */
-    max-width: 800px; /* Maximum width of the content */
-    margin: 0 auto; /* Centers the content */
-    padding: 0 auto; /* Add some padding inside the containers */
+        #introduction,
+        #plot-criteria, 
+        #radar-plot,
+        #radar-plot-2,
+        #plot-container
+     {
+            width: 95%; /* Use the full width for small screens */
+            max-width: 800px; /* Maximum width of the content */
+            margin: 0 auto; /* Centers the content */
+            padding: 0 auto; /* Add some padding inside the containers */
 
 }
         #word-checkboxes {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Attempting 2 columns */
-            gap: 0;
-            margin-top: 20px; /* Adjusted margin */
+            gap: 0 auto;
+            margin-top: 0 auto; /* Adjusted margin */
+            margin-left: 0 auto; /* Adjusted margin */
         }
         @media (max-width: 768px) {
         #radar-plot,
@@ -42,32 +48,49 @@
             margin-top: 0px;
         }
         #starplot-container {
-            display: inline-flex;
+            width: 60%; /* Full width of the parent container */
+            max-width: 300px; /* Adjust based on your design */
+            margin: 0 auto; /* Center the container */
             flex-direction: column;
             align-items: left;
+            
+        }
+        #plot-container {
+            background-color: #AED6F1; /* Light grey background; adjust color as needed */
+            border-radius: 15px; /* Rounded corners */
+            padding: 10px; /* Padding around the content */
+            margin: auto; /* Center the wrapper horizontally */
+    max-width: 800px;
+
 
         }
-        
         #word-list-container {
             display: inline-flex;
             flex-direction: column;
             margin-top: 10px;
+            align-items: left;
         }
         body, html {
-    margin: 0;
-    padding: 0; /* Reset default padding */
-    display: flex;
-    justify-content: flex-start; /* Align content from the top */
-    align-items: center;
-    flex-direction: column;
-    background-color: #e8f4f8;
+            margin: 0;
+            padding: 0; /* Reset default padding */
+            display: flex;
+            justify-content: flex-start; /* Align content from the top */
+            align-items: left;
+            flex-direction: column;
+            background-color: #e8f4f8;
 
 }
+
+.formula-small {
+    font-size: 0.8em; /* Smaller font size; adjust as needed */
+}
+
         .controls-container {
         display: flex;
         justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
-        align-items: center; /* Aligns items vertically in the center */
-        max-width: 768px;        }
+        max-width: 768px; 
+        font-size: smaller; 
+        align-self: flex-end;      }
 
         .sort-group {
             display: flex;
@@ -75,19 +98,23 @@
             margin-top: 10px;
  /* Ensure vertical alignment of elements inside sort group */
         }
-
+        #sort-label {
+        align-self: flex-end
+        }
+        
         .toggle-container {
             display: inline-block;
-            vertical-align: top; /* Adjust the vertical alignment */
-
+            margin-left: auto; /* Push to the right */
+            align-self: flex-end; /* Align to the bottom of the flex container */
             /* Additional styling for the toggle, if needed */
         }
+        
 
     </style>
 </head>
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
-    <div id="plot-container">
+    <div id="introduction">
         <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>
         <p id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 11pt">
             <li>The black dot represents the average 
@@ -95,6 +122,7 @@
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
             popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
+    <div id="plot-container">
     <div id="metric-selector">
         <div id="btn-group button" class="btn-group" role="group">
             <button type="button" class="btn btn-outline-dark btn-sm" data-metric="rate"> Rate</button>
@@ -105,33 +133,36 @@
         </div>
     <div id="metric-description" style="text-align: left; margin-top: 5px;font-size: 10pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
-            <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
-            </div>
+            <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> <span class="formula-small">Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
+        </span></div>
             <div id="description-ratio" class="metric-description" style="display: none;">
-                <strong>Multi-Button Interaction Ratio: </strong>out of all the learner's interactions the ratio of them who used two or more different words.<br> Formula: \( \frac{\text{Number of multi-button interactions}}{\text{Number of interactions}} \)
-            </div>
+                <strong>Multi-Button Interaction Ratio: </strong>out of all the learner's interactions the ratio of them who used two or more different words.<br> <span class="formula-small">Formula: \( \frac{\text{Number of multi-button interactions}}{\text{Number of interactions}} \)
+            </span></div>
             <div id="description-consistency" class="metric-description" style="display: none;">
-                <strong>Consistency over time: </strong>proportion of days has the learner been active since its first first press until its last press.<br> Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
-            </div>
+                <strong>Consistency over time: </strong>proportion of days has the learner been active since its first first press until its last press.<br> <span class="formula-small">Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
+                </span></div>
             <div id="description-buttons" class="metric-description" style="display: none;">
-                <strong>Buttons Available: </strong>average number of buttons at the time of data collection .<br>Formula:  \( \frac{\sum_{i=1}^{n} \text{Buttons}_i}{n} \)
-                
+                <strong>Buttons Available: </strong>average number of buttons at the time of data collection .<br><span class="formula-small">Formula:  \( \frac{\sum_{i=1}^{n} \text{Buttons}_i}{n} \)
+                </span>
             </div>
             <div id="description-entropy" class="metric-description" style="display: none;">
                 <strong>Average Daily Entropy: </strong>
-                the sequence of buttons pressed along a day can be used to compute it's entropy \(\text{H}\).<br> Formula:  \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\) <br>where: 
-                \( p(x_i) \) is the probability of pressing button \( i \),
-                \( n \) is the number of buttons available,
-                and \( p(\text{no press}) \) is the probability of not pressing any button.
-                
+                The sequence of buttons pressed along a day can be used to compute its entropy \(\text{H}\).
+                <br>
+                <span class="formula-small">Formula: \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\)</span>
+                <br>
+                where:
+                <span class="formula-small">\(\ p(x_i) \) is the probability of pressing button \( i \),</span>
+                <span class="formula-small">\(\ n \) is the number of buttons available,</span>
+                <span class="formula-small">and \(\ p(\text{no press}) \) is the probability of not pressing any button.</span>
             </div>
             
 </div>
 </div>
     <div class="controls-container">
         <div class="sort-group" style="display: flex; align-items: center;">
-            <div id="sort-label">
-                <h6>Sort by:</h6>
+            <div id="sort-label" >
+                <label>Sort by:</label>
             </div>
             <div id="sort-container" class="btn-group" role="group" style= "margin-left:5px;">
                 <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-popularity">Popularity</button>
@@ -139,19 +170,20 @@
             </div>
         </div>
         <div class="toggle-container">
-            <h6>
-                <input type="checkbox" id="toggle-group">
+            <label>
+                <input type="checkbox" id="toggle-group" >
                 Group Similar Words
-            </h6>
+            </label>
         </div>
     </div>    
     <div id="your-svg-container"></div>
+</div>
     <!-- Star Plot Section -->
     <div id="radar-plot">
-    <h3>Word Comparison</h3>
-            <h6>Select two words to compare them accross all metrics</h6>
+    <h5>Word Comparison</h5>
+            <h6>Click on two words to compare them accross all metrics</h6>
     </div>
-    <div style="display: inline-flex;">
+    <div id="radar-plot-2" style="display: inline-flex;">
         <div id="word-list-container">
             <div id="word-checkboxes">
                 <!-- Checkboxes will be added here dynamically -->

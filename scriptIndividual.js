@@ -1,5 +1,5 @@
 let svgWidth = document.getElementById('your-svg-container').clientWidth;
-let svgHeight = 0.6*svgWidth ; // Maintain aspect ratio, e.g., 3:4
+let svgHeight = svgWidth *0.55; // Maintain aspect ratio, e.g., 3:4
 let maxPopularity, minPopularity;
 let originalData, groupedData;
 let useGroupedData = false; // State of the toggle
@@ -24,7 +24,6 @@ const scaleRadius = d => Math.sqrt(d); // Adjust the scale function as needed
 const svg = d3.select('#your-svg-container')
     .append('svg')
     .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`)
-    .attr('preserveAspectRatio', 'xMinYMin meet');
 const stripesGroup = svg.append("g").attr("class", "stripes-group");
 const linesGroup = svg.append("g").attr("class", "lines-group");
 const circlesGroup = svg.append("g").attr("class", "circles-group");
@@ -174,8 +173,8 @@ function updateVisualization(metric, useGroupData) {
     // Define metric labels
     const metricAxisLabels = {
         'rate': 'Average Number of Interactions per Day',
-        'ratio': 'Ratio of multi-button interactions',
-        'consistency': 'Ratio of active days)',
+        'ratio': 'Ratio of Multi-button Interactions',
+        'consistency': 'Ratio of Active Days',
         'buttons': 'Buttons Available',
         'entropy': 'H (bits)'
     };
@@ -191,7 +190,7 @@ function updateVisualization(metric, useGroupData) {
         .attr('y', d => yScale(useGroupData ? d.word_category : d.word))
         .attr('width', width - margin.left - margin.right)
         .attr('height', yScale.bandwidth())
-        .attr('fill', (d, i) => i % 2 === 0 ? 'white' : '#e8f4f8');
+        .attr('fill', (d, i) => i % 2 === 0 ? '#AED6F1' : '#e8f4f8');
 
     let metricPresent = metric + '_present';
     let metricAbsent = metric + '_absent';
@@ -373,7 +372,12 @@ function getMetricsData(word) {
 }
 
 // Define star plot dimensions
-const starPlotWidth = 300, starPlotHeight = 300;
+
+let starPlotWidth = document.getElementById('starplot-container').clientWidth;
+
+// Define star plot dimensions
+const starPlotHeight = starPlotWidth; // Maintain aspect ratio, e.g., 3:4
+
 const starRadius = Math.min(starPlotWidth, starPlotHeight) / 3;
 const starCenter = { x: starPlotWidth / 2, y: starPlotHeight / 2 };
 
@@ -509,7 +513,7 @@ function drawLegend(svg, maxPopularity, minPopularity, width, height) {
 
     const legendGroup = svg.append("g")
                            .attr("class", "legend")
-                           .attr("transform", `translate(680,205)`); // Adjusted to position at top left
+                           .attr("transform", `translate(620,315)`); // Adjusted to position at top left
 
     // Add legend title
     legendGroup.append("text")
