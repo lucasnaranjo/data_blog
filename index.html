@@ -11,10 +11,13 @@
         * {
     box-sizing: border-box;
 }
+        #metric-selector, 
         #introduction,
         #plot-criteria, 
+        .controls-container, 
         #radar-plot,
         #radar-plot-2,
+        #starplot-container,
         #plot-container
      {
             width: 95%; /* Use the full width for small screens */
@@ -58,7 +61,7 @@
         #plot-container {
             background-color: #AED6F1; /* Light grey background; adjust color as needed */
             border-radius: 15px; /* Rounded corners */
-            padding: 10px; /* Padding around the content */
+            padding: 0px; /* Padding around the content */
             margin: auto; /* Center the wrapper horizontally */
     max-width: 800px;
 
@@ -123,13 +126,13 @@
             popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
     <div id="plot-container">
-    <div id="metric-selector">
+    <div id="metric-selector"  style="margin-top: 10px">
         <div id="btn-group button" class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-dark btn-sm" data-metric="rate"> Rate</button>
-            <button type="button" class="btn btn-outline-dark btn-sm" data-metric="ratio">Ratio</button>
-            <button type="button" class="btn btn-outline-dark btn-sm" data-metric="consistency">Consistency</button>
-            <button type="button" class="btn btn-outline-dark btn-sm" data-metric="buttons">Buttons</button>
-            <button type="button" class="btn btn-outline-dark btn-sm" data-metric="entropy">Entropy</button>
+            <button type="button" class="btn btn-info btn-sm rounded-pill " data-metric="rate"> Rate</button>
+            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="ratio">Ratio</button>
+            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="consistency">Consistency</button>
+            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="buttons">Buttons</button>
+            <button type="button" class="btn btn-info btn-sm rounded-pill" data-metric="entropy">Entropy</button>
         </div>
     <div id="metric-description" style="text-align: left; margin-top: 5px;font-size: 10pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
@@ -165,8 +168,8 @@
                 <label>Sort by:</label>
             </div>
             <div id="sort-container" class="btn-group" role="group" style= "margin-left:5px;">
-                <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-popularity">Popularity</button>
-                <button type="button" class="btn btn-outline-dark btn-sm" id="sort-by-metric">Metric</button>
+                <button type="button" class="btn btn-outline-dark btn-sm " id="sort-by-popularity">Popularity</button>
+                <button type="button" class="btn btn-outline-dark btn-sm " id="sort-by-metric">Metric</button>
             </div>
         </div>
         <div class="toggle-container">
