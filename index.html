@@ -21,7 +21,7 @@
         #plot-container,
         #metric-description
      {
-            width: 100%; /* Use the full width for small screens */
+            width: 99%; /* Use the full width for small screens */
             max-width: 800px; /* Maximum width of the content */
             margin: 0 auto; /* Centers the content */
             padding: 1 auto; /* Add some padding inside the containers */
@@ -65,7 +65,6 @@
             padding: 0px; /* Padding around the content */
             margin: auto; /* Center the wrapper horizontally */
     max-width: 800px;
-    border: 1px solid #1b6d71; 
 
 
         }
@@ -87,7 +86,7 @@
 }
 
 .formula-small {
-    font-size: 0.8em; /* Smaller font size; adjust as needed */
+    font-size: 0.9em; /* Smaller font size; adjust as needed */
 }
 
         .controls-container {
@@ -176,10 +175,7 @@
             </div>
         </div>
         <div class="toggle-container">
-            <label>
-                <input type="checkbox" id="toggle-group" >
-                Group Similar Words
-            </label>
+            <button type="button" class="btn btn-outline-dark btn-sm" id="toggle-group-button">Group Words</button>
         </div>
     </div>    
     <div id="your-svg-container"></div>

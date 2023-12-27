@@ -116,14 +116,14 @@ d3.csv("mean_scores_df.csv").then(loadedData => {
 
 });
 
-
-d3.select('#toggle-group').on('change', function() {
-    useGroupedData = d3.select(this).property('checked');
+d3.select('#toggle-group-button').on('click', function() {
+    useGroupedData = !useGroupedData; // Toggle the state
+    d3.select(this).classed('active', useGroupedData);
     console.log("Toggle changed: ", useGroupedData); // Added console log
     updateVisualization(currentMetric, useGroupedData);
     sortBy(currentSortCriteria, currentMetric);
+    });
 
-});
 
 // Load CSV data
 d3.csv("mean_scores_grouped_df.csv").then(loadedData => {
