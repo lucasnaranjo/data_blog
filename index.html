@@ -47,6 +47,9 @@
             font-size: larger;
         }
     }
+       #radar-plot{
+            margin-top: 10px;
+        }
         #sort-container {
             text-align: right;
             margin-top: 0px;
@@ -86,7 +89,7 @@
 }
 
 .formula-small {
-    font-size: 0.9em; /* Smaller font size; adjust as needed */
+    font-size: 0.8em; /* Smaller font size; adjust as needed */
 }
 
         .controls-container {
@@ -126,6 +129,14 @@
             first 4 words. The other end of the line is the average score for learners who did not have the word introduced early.</li> <li> The size of the black dot indicates the word's 
             popularity as an early button.</li><li>Choose among the 5 following metrics.</li></p>
     </div>
+    <div id="metric-selector"  style="margin-top: 10px">
+        <div id="btn-group button" class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill " data-metric="rate"> Rate</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="ratio">Ratio</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="consistency">Consistency</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="buttons">Buttons</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="entropy">Entropy</button>
+        </div>
     <div id="metric-description" style="text-align: left; margin-bottom: 5px;font-size: 11pt;">
         <div id="description-rate" class="metric-description" style="display: none;">
             <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> <span class="formula-small">Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
@@ -152,14 +163,7 @@
                 <span class="formula-small">and \(\ p(\text{no press}) \) is the probability of not pressing any button.</span>
             </div>
             
-            <div id="metric-selector"  style="margin-top: 10px">
-                <div id="btn-group button" class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill " data-metric="rate"> Rate</button>
-                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="ratio">Ratio</button>
-                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="consistency">Consistency</button>
-                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="buttons">Buttons</button>
-                    <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="entropy">Entropy</button>
-                </div>
+           
 </div>
     <div id="plot-container">
     
