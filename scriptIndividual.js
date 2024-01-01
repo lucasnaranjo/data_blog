@@ -153,13 +153,15 @@ d3.csv("mean_scores_grouped_df.csv").then(loadedData => {
     
 // Event listener for the metric buttons
 d3.selectAll('[data-metric]').on('click', function() {
-    let selectedMetric = d3.select(this).attr('data-metric');
+    currentMetric = d3.select(this).attr('data-metric');
+    console.log("this is the current metric."+currentMetric);
+    
     // Hide all metric descriptions
     d3.selectAll('.metric-description').style("display", "none");
-    d3.select(`#description-${selectedMetric}`).style("display", "block");
+    d3.select(`#description-${currentMetric}`).style("display", "block");
     // Update the visualization based on the selected metric
-    updateVisualization(selectedMetric, useGroupedData);
-    setActiveButton(selectedMetric);
+    updateVisualization(currentMetric, useGroupedData);
+    setActiveButton(currentMetric);
 });
 
 // Function to update visualization based on the selected metric
@@ -280,14 +282,14 @@ function updateVisualization(metric, useGroupData) {
 
 
 
-function setActiveButton(selectedMetric) {
-    console.log("Setting active button for metric:", selectedMetric);
+function setActiveButton(currentMetric) {
+    console.log("Setting active button for metric:", currentMetric);
 
     // Remove highlighting from all metric buttons
     d3.selectAll('[data-metric]').classed('active', false);
 
     // Add highlighting to the currently selected metric button
-    d3.select(`[data-metric="${selectedMetric}"]`).classed('active', true);
+    d3.select(`[data-metric="${currentMetric}"]`).classed('active', true);
 }
 
 
@@ -337,10 +339,12 @@ function setActiveSortButton(selectedSortButtonId) {
 // Event listeners for sorting buttons
 d3.select('#sort-by-popularity').on('click', () => {
     sortBy('popularity', currentMetric);
+
     setActiveSortButton('sort-by-popularity');
 });
 d3.select('#sort-by-metric').on('click', () => {
     sortBy('metric', currentMetric);
+    console.log("current metric:", currentMetric);
     setActiveSortButton('sort-by-metric');
 });
 
@@ -423,7 +427,7 @@ function polarToCartesian(centerX, centerY, radius, angleInRadians) {
 
 // Function to draw the star for a word
 let colorMap = {}; // Object to store colors for each word
-const colors = ['blue', 'green', 'orange']; // Your colors
+const colors = ['blue', 'red','green',  'orange']; // Your colors
 let colorIndex = 0; // To track which color to assign next
 
 function updateStarPlot(selectedWords, originalData) {
@@ -460,49 +464,6 @@ function drawStar(word, color) {
     .attr('fill', color)
     .attr('fill-opacity', 0.5);
 }
-
-// Function to show tooltip
-function showTooltip(selectedMetric, element) {
-    let description = metricDescriptions[selectedMetric];
-    let tooltip = d3.select("#tooltip");
-    let metricSelectorContainer = d3.select("#metric-selector-container").node().getBoundingClientRect();
-
-    tooltip
-        .style("display", "block")
-        .html(description)
-        .style("color", "black") 
-        .style("padding", "10px")
-
-    // Align with the left border of the leftmost button
-    let leftPosition = metricSelectorContainer.left + window.scrollX;
-
-    tooltip
-        .style("left", `${leftPosition}px`)
-        .style("top", `${element.getBoundingClientRect().bottom + window.scrollY}px`); // Directly below the button
-}
-
-
-
-
-
-
-
-// Event listener for the metric selector
-let currentMetric = 'rate'; // Default metric
-
-
-
-
-
-
-// Hide tooltip when clicking outside
-d3.select("body").on("click", function(event) {
-    if (event.target.getAttribute("data-metric") === null) {
-        d3.select("#tooltip").style("display", "none");
-        currentTooltipMetric = null; // Reset current tooltip metric
-    }
-});
-
 
 
 // Function to draw the legend
@@ -550,7 +511,6 @@ function drawLegend(svg, maxPopularity, minPopularity, width, height) {
     console.log("Legend drawn.");
 }
 
-
 function updateWordListStyle(selectedWords) {
     // Reset all labels to default style
     d3.selectAll('.word-checkbox label').style("font-weight", "normal").style("color", "black");
@@ -565,7 +525,6 @@ function updateWordListStyle(selectedWords) {
         d3.select(`label[for='word-${word}']`).style("font-weight", "bold").style("color", colorMap[word]);
     });
 }
-
 
 updateWordListStyle(selectedWords);
 updateStarPlot(selectedWords);
