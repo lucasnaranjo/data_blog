@@ -278,10 +278,6 @@ function updateVisualization(metric, useGroupData) {
 
 }           
 
-
-
-
-
 function setActiveButton(currentMetric) {
     console.log("Setting active button for metric:", currentMetric);
 
@@ -291,8 +287,6 @@ function setActiveButton(currentMetric) {
     // Add highlighting to the currently selected metric button
     d3.select(`[data-metric="${currentMetric}"]`).classed('active', true);
 }
-
-
 
 function sortBy(criteria, metric) {
     currentSortCriteria = criteria
@@ -427,7 +421,7 @@ function polarToCartesian(centerX, centerY, radius, angleInRadians) {
 
 // Function to draw the star for a word
 let colorMap = {}; // Object to store colors for each word
-const colors = ['blue', 'red','green',  'orange']; // Your colors
+const colors = ['blue', 'red','skyblue',  'orange']; // Your colors
 let colorIndex = 0; // To track which color to assign next
 
 function updateStarPlot(selectedWords, originalData) {
