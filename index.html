@@ -45,7 +45,6 @@
         #plot-subtitle,
         #metric-description,
         #plot-criteria,
-        #word-checkboxes,
         #figure-1,
         #metric-description,
         #main-text,
@@ -55,7 +54,7 @@
         }
         
         /* Increase the font size of the Y axis labels for better readability */
-        .y-axis-label
+        label
          {
             font-size: larger;
         }
@@ -139,14 +138,14 @@
 <body>
     <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
     <div id="introduction">
-        <h3 id="plot-title" style="text-align: left">What do their first buttons tell us about their future button behavior?</h3>  
+        <h3 id="plot-title" style="margin-top :20px;">What do their first buttons tell us about their learning trajectory?</h3>  
         <p id= "main-text" >
 
-            In this blog post, we analyze the data collected through the FluentPet App to explore how specific words, when introduced early, can shape the learning trajectory.
+            In this blog post, we analyze the data collected through the FluentPet App to explore how specific words, when introduced early,
+             can shape the learning trajectory.
 
-We have measured five different aspects of the learner's behavior, as described in Figure 1. On the interactive plot, you can explore the effects of these words, 
-additionally, we have added a "Group Words" button that you can toggle, as some of the words are similar (such as outside, walk, and potty).
-
+We have measured five different aspects of the learner's behavior, as described in <strong>Figure 1</strong>. The interactive plot allows you to explore the effects of these words.
+In<strong>Figure 2</strong>, you can compare how words perform accross all metrics.
 
         </p>
     </div>
@@ -212,13 +211,13 @@ additionally, we have added a "Group Words" button that you can toggle, as some 
     </div>    
     <div id="your-svg-container"></div>
 </div>
-<div id="discussion">
+<div id="discussion" style="margin-top :20px;">
 <h5>Discussion</h5>
 <p>
 One word that stands out as being particularly beneficial is "Play". By introducing this word early on, learners show higher scores in multi-button ratio, Daily Rate, and Entropy. The "Play" button not only encourages playfulness but also communication, creating a feedback loop that amplifies communication over time, leading to more diverse requests through the buttons. 
-<br>
+<br><br>
 On the other hand, learners who were introduced to "Outside" or "Walk" buttons early on tend to have lower scores in most metrics than those who did not include those words at the beginning. Following a similar reasoning with the "Play" button, the "Outside" moment for the learner is a time of expansion and discovery of the world. As a result, the attention is not so focused on the teacher but towards all kinds of things. In other words, "Outside" is a "conversation stopper" while "Play" is a call to continue the conversation. Of course, this doesn't mean "Outside" should be avoided as a first word. It's the most popular word and many chatty learners started with "Outside" among their first words.
-<br>Interestingly, "Food" and "Treat" show a negative effect on all metrics except for consistency, where their effect is quite positive. This aligns with what we know about those buttons. If learners associate these buttons with food, they will use them, but maybe not in the most diverse ways.
+<br><br>Interestingly, "Food" and "Treat" show a negative effect on all metrics except for consistency, where their effect is quite positive. This aligns with what we know about those buttons. If learners associate these buttons with food, they will use them, but maybe not in the most diverse ways.
 </p>
 </div>   <!-- Star Plot Section -->
     <div id="radar-plot">
@@ -231,9 +230,10 @@ On the other hand, learners who were introduced to "Outside" or "Walk" buttons e
             </div>
         </div>
         <div id="starplot-container">  </div>
-        
     </div>
-    <div id="plot-criteria">
+
+    <div id="plot-criteria" style="margin-top: 10px;">
+        <p>This is the first in a series of blog posts exploiting our very unique database! Each journey is unique and here we are averaging over learners so, what did not work for most learners might be exactly what a learner needed. Stay in touch for more posts!</p>
         <h5 >Exclusion Criteria</h5>
         <h6  style="text-align: left; font-weight: normal ;font-size: 11pt">
             We only included learners who:<br>
