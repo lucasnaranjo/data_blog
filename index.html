@@ -1,32 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS_HTML-full"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D3 Timeline</title>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <title>D3 Visualization</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">    
     <style>
-        /* Style for mobile devices */
-@media (max-width: 600px) {
-  svg {
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Half of viewport height */
-  }
+        * {
+    box-sizing: border-box;
 }
+        #metric-selector, 
+        #introduction,
+        #plot-criteria, 
+        .controls-container, 
+        #radar-plot,
+        #radar-plot-2,
+        #starplot-container,
+        #plot-container,
+        #figure-1,
+        #metric-description,
+        #discussion
+     {
+            width: 99%; /* Use the full width for small screens */
+            max-width: 800px; /* Maximum width of the content */
+            margin: 0 auto; /* Centers the content */
+            padding: 1 auto; /* Add some padding inside the containers */
 
-        label{
-            font-family: 'Crimson Text', serif;
+}
+.btn.active {
+    color: white; /* White text for better contrast */
+}
+        #word-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* Attempting 2 columns */
+            gap: 0 auto;
+            margin-top: 0 auto; /* Adjusted margin */
+            margin-left: 0 auto; /* Adjusted margin */
+            font-size: large;
         }
-        body {
-            font-family: 'Crimson Text', serif;
+        @media (max-width: 768px) {
+        #radar-plot,
+        #plot-subtitle,
+        #metric-description,
+        #plot-criteria,
+        #figure-1,
+        #metric-description,
+        #main-text,
+        #discussion
+        {
+            font-size: smaller;
+        }
+        
+        /* Increase the font size of the Y axis labels for better readability */
+        label
+         {
+            font-size: larger;
+        }
+    }
+       #radar-plot{
+            margin-top: 10px;
+        }
+        #sort-container {
+            text-align: right;
+            margin-top: 0px;
+        }
+        #starplot-container {
+            max-width: 400px; /* Adjust based on your design */
+            margin: 0 auto; /* Center the container */
+            flex-direction: column;
+            align-items: left;
+            
+        }
+        #plot-container {
+            background-color: #AED6F1; /* Light grey background; adjust color as needed */
+            border-radius: 15px; /* Rounded corners */
+            padding: 0px; /* Padding around the content */
+            margin: auto; /* Center the wrapper horizontally */
+            max-width: 800px;
+        }
+        #radar-plot-2 {
+            background-color: rgb(99, 142, 146); /* Light grey background; adjust color as needed */
+            border-radius: 15px; /* Rounded corners */
+            padding: 0px; /* Padding around the content */
+            margin: auto; /* Center the wrapper horizontally */
+            max-width: 800px;
+        }
+        #word-list-container {
+            display: inline-flex;
+            flex-direction: column;
+            align-self: center;
+            text-align: right;
+            margin-left: 5%;
+
+        }
+        body, html {
+            margin: 0;
+            padding: 0; /* Reset default padding */
+            display: flex;
+            justify-content: flex-start; /* Align content from the top */
+            align-items: left;
+            flex-direction: column;
+            background-color: #e8f4f8;}
+
+        .formula-small {
+            font-size: 0.8em; /* Smaller font size; adjust as needed */
         }
 
-    
+        .controls-container {
+        display: flex;
+        justify-content: space-between; /* This will push the sort group and toggle to opposite ends */
+        max-width: 768px; 
+        font-size: smaller; 
+        align-self: flex-end;      }
+
+        .sort-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+ /* Ensure vertical alignment of elements inside sort group */
+        }
+        #sort-label {
+        align-self: flex-end
+        }
+        
+        .toggle-container {
+            display: inline-block;
+            margin-left: auto; /* Push to the right */
+            align-self: flex-end; /* Align to the bottom of the flex container */
+            /* Additional styling for the toggle, if needed */
+        }
+        
+
     </style>
 </head>
 <body>
-    <script src="script.js" id="data-script">
-    </script>
+    <div id="tooltip" style="display: none; position: absolute; background-color: white; border: 1px solid black; padding: 10px; border-radius: 5px;"></div>
+    <div id="introduction">
+        <h3 id="plot-title" style="margin-top :20px;">What do their first buttons tell us about their learning trajectory?</h3>  
+        <p id= "main-text" >
 
-</body>
+            In this blog post, we analyze the data collected through the FluentPet App to explore how specific words, when introduced early,
+             can shape the learning trajectory.
+
+We have measured five different aspects of the learner's behavior, as described in <strong>Figure 1</strong>. This interactive plot allows you to explore the effects of these words.
+In <strong>Figure 2</strong>, you can compare how words perform accross all metrics.
+
+        </p>
+    </div>
+    <div id="figure-1">
+        <h5>Figure 1: Word Ranking by Score</h5>
+        <p id="plot-subtitle" style="text-align: left; font-weight: normal ;font-size: 9pt">
+            <li>The dot indicates the average 
+            score for learners who included early the specific word.</li><li> A word is classified as 'early' if it is within the learner's 
+            first 4 words.</li><li>The end of the line is the average score for learners who did not have the word introduced early.</li> 
+            <li> Dot size indicates the word's 
+            popularity as an early button.</li>
+        </div>
+            <div id="metric-selector"  style="margin-top: 5px">
+        <div id="btn-group button" class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill " data-metric="rate"> Rate</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="ratio">Ratio</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="consistency">Consistency</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="buttons">Buttons</button>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill" data-metric="entropy">Entropy</button>
+        </div>
+    <div id="metric-description" style="text-align: left; margin-bottom: 5px;font-size: 11pt;">
+        <div id="description-rate" class="metric-description" style="display: none;">
+            <strong>Interaction Rate: </strong>average interactions per day, excluding those which contain the word of interest. <br> <span class="formula-small">Formula: \( \frac{\text{Number of interactions - Interactions w/ word}}{\text{Active Days}} \)
+        </span></div>
+            <div id="description-ratio" class="metric-description" style="display: none;">
+                <strong>Multi-Button Interaction Ratio: </strong>out of all the learner's interactions the ratio of them who used two or more different words.<br> <span class="formula-small">Formula: \( \frac{\text{Number of multi-button interactions}}{\text{Number of interactions}} \)
+            </span></div>
+            <div id="description-consistency" class="metric-description" style="display: none;">
+                <strong>Consistency over time: </strong>proportion of days has the learner been active since its first first press until its last press.<br> <span class="formula-small">Formula:  \( \frac{\text{Number of Days with at least one interaction}}{\text{Timespan}} \)
+                </span></div>
+            <div id="description-buttons" class="metric-description" style="display: none;">
+                <strong>Buttons Available: </strong>average number of buttons at the time of data collection .<br><span class="formula-small">Formula:  \( \frac{\sum_{i=1}^{n} \text{Buttons}_i}{n} \)
+                </span>
+            </div>
+            <div id="description-entropy" class="metric-description" style="display: none;">
+                <strong>Average Daily Entropy: </strong>
+                The sequence of buttons pressed along a day can be used to compute its entropy \(\text{H}\).
+                <br>
+                <span class="formula-small">Formula: \( H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i) - p(\text{no press}) \log_2 p(\text{no press})\)</span>
+                <br>
+                where:
+                <span class="formula-small">\(\ p(x_i) \) is the probability of pressing button \( i \),</span>
+                <span class="formula-small">\(\ n \) is the number of buttons available,</span>
+                <span class="formula-small">and \(\ p(\text{no press}) \) is the probability of not pressing any button.</span>
+            </div>
+            
+           
+</div>
+    <div id="plot-container">
+    <div class="controls-container">
+        <div class="sort-group" style="display: flex; align-items: center;">
+            <div id="sort-label" >
+                <label>Sort by:</label>
+            </div>
+            <div id="sort-container" class="btn-group" role="group" style= "margin-left:5px;">
+                <button type="button" class="btn btn-outline-dark btn-sm " id="sort-by-popularity">Popularity</button>
+                <button type="button" class="btn btn-outline-dark btn-sm " id="sort-by-metric">Metric</button>
+            </div>
+        </div>
+        <div class="toggle-container">
+            <button id="toggle-difference" class="btn btn-outline-dark btn-sm">Show Effect</button>
+
+            <button type="button" class="btn btn-outline-dark btn-sm" id="toggle-group-button">Group Words</button>
+        </div>
+    </div>    
+    <div id="your-svg-container"></div>
+</div>
+<div id="discussion" style="margin-top :20px;">
+<h5>Discussion</h5>
+<p>
+One word that stands out as being particularly beneficial is "Play". By introducing this word early on, 
+learners show higher scores in Multi-button Ratio, Interaction Rate, and Entropy. The "Play" button
+ not only encourages playfulness but also communication, creating a feedback loop that amplifies 
+ communication over time, leading to more diverse utterances through buttons. 
+<br><br>
+On the other hand, learners who were introduced to "Outside" or "Walk" buttons early on tend to have lower scores in most metrics than those who did not include those words at the beginning. A possible explanation for this is that the "Outside" moment for the learner is a moment to explore and focus and the outside world. As a result, after pressing "Outside", the learner's attention is not so focused on the teacher. In other words, "Outside" is a "conversation stopper" while "Play" is a call to continue the engagement between teacher and learner. Of course, this doesn't mean "Outside" should be avoided as a first word. It's the most popular word and many chatty learners started with "Outside" among their first words.
+<br><br>Interestingly, "Food" and "Treat" show a negative effect on all metrics except for consistency, where their effect is quite positive. This aligns with what we know about those buttons. If learners associate these buttons with food, they will use them, but maybe not in the most diverse ways.
+</p>
+</div>   <!-- Star Plot Section -->
+    <div id="radar-plot">
+    <h5>Figure 2: Word Comparison</h5>
+            <h6>Click on two words to compare them accross all metrics</h6>
+    </div>
+    <div id="radar-plot-2" style="display: inline-flex;">
+        <div id="word-list-container">
+            <div id="word-checkboxes">
+            </div>
+        </div>
+        <div id="starplot-container">  </div>
+    </div>
+
+    <div id="plot-criteria" style="margin-top: 10px;">
+        <p>This was the first blog post in a series exploring our unique database. Each learning journey is unique and can vary greatly from one learner to another. Therefore, what may not have worked for most learners could work for another learner. We hope you'll stay tuned for more posts to come!</p>
+        <h5 >Exclusion Criteria</h5>
+        <h6  style="text-align: left; font-weight: normal ;font-size: 11pt">
+            We only included learners who:<br>
+            <li>Had 7 different buttons or less in their first week of collected data as they might started learning long before logging their data.</li>
+            <li>Started logging their presses at latest than 2 months after they started their learning.</li>
+            <li>Logged for at least 60 days.</li>        
+            The resulting dataset is composed of 178 pet learners.       
+        </h6>
+    </div>
+    <script src="scriptIndividual.js" id="data-script"></script>
+    </body>
 </html>
+
+
