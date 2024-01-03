@@ -1,176 +1,202 @@
-// Define dimensions and margins
-const width = 800; // Adjust as needed
-const height = 600; // Adjust as needed
-const margin = { top: 20, right: 20, bottom: 30, left: 60 }; // Adjust as needed
+// Set Up the SVG Canvas
+const margin = { top: 20, right: 30, bottom: 20, left: 30 };
+const width = 960 - margin.left - margin.right;
+const height = 800 - margin.top - margin.bottom;
+// Custom color palette inspired by vivid and playful styles
+const warmPalette = ['#402a22','#93fa57','#f5bb2a','#940005']; // Enhanced warm colors
+const coolPalette = ['#93fa57','#5956fc','#940005','#402a22']; // Enhanced cool colors
 
-// Define a radius scale if needed
-const scaleRadius = d => Math.sqrt(d); // Adjust the scale function as needed
+// Define the Spanish locale
+const spanishLocale = d3.timeFormatLocale({
+  dateTime: "%A, %e de %B de %Y %X",
+  date: "%d/%m/%Y",
+  time: "%H:%M:%S",
+  periods: ["AM", "PM"], // or ["a. m.", "p. m."] depending on preference
+  days: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+  shortDays: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+  months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+  shortMonths: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+});
 
-// Create SVG canvas outside the data load to access it later in the sort function
-const svg = d3.select('#your-svg-container')
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
+// Create a time format function using the Spanish locale
+const spanishTimeFormat = spanishLocale.format("%d %b");
 
-// Load CSV data
-let data;
-let yScale; // Declare yScale here
 
-d3.csv("mean_scores_df.csv").then(loadedData => {
-    data = loadedData; //
-    // Convert numeric values from strings to numbers
-    data.forEach(d => {
-        d.score_present = +d.score_present;
-        d.score_absent = +d.score_absent;
-        d.popularity = +d.popularity;
-    });
+const svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Compute the minimum and maximum scores
-    const minScore = d3.min(data, d => Math.min(d.score_present, d.score_absent));
-    const maxScore = d3.max(data, d => Math.max(d.score_present, d.score_absent));
-    const buffer = (maxScore - minScore) * 0.05; // 5% buffer
+// Time Scales
+const startDate = new Date("2022-05-01");
+const endDate = new Date();
+const x = d3.scaleTime()
+  .domain([startDate, endDate])
+  .range([0, width]);
 
-    const defaultStrokeWidth = 1; // Default stroke width
-    const hoverStrokeWidth = 3; // Stroke width on hover
 
-// Draw lines with hover effects
+// Draw Weekly Bands
+const oneWeek = 7 * 24 * 60 * 60 * 1000; // One week in milliseconds
+let currentDate = startDate;
 
-    // Adjust the xScale domain
+while (currentDate < endDate) {
+  let weekEnd = new Date(currentDate.getTime() + oneWeek);
+  const seasonPalette = getSeason(currentDate.getMonth());
+  svg.append("rect")
+    .attr("x", x(currentDate))
+    .attr("width", x(weekEnd) - x(currentDate))
+    .attr("y", 0)
+    .attr("height", height)
+    .attr("fill", getRandomColorFromPalette(seasonPalette)) // Assign a color based on the season
+    .datum(currentDate)
+    //.style("filter", "url(#blur-filter)"); // Apply the blur filter
+
+
+  currentDate = weekEnd;
+}
+
+const xAxis = d3.axisTop(x)
+  .tickFormat(spanishTimeFormat); 
+  
+
+svg.append("g")
+ .attr("class", "x axis")
+ .attr("transform", "translate(0,0)") // Position at the top of the SVG
+ .call(xAxis)
+ .selectAll("text")
+ .attr("fill", "black")
+ .attr("y", 0) // Adjust this to move labels up or down
+ .style("font-family", "'Crimson Text', serif"); // Apply the 'Crimson Text' font
+
+
+// Define the blur filter
+svg.append("defs").append("filter")
+  .attr("id", "blur-filter")
+  .append("feGaussianBlur")
+  .attr("stdDeviation", 1); // The standard deviation for the blur. Adjust as needed.
+
+// Load and Plot Events
+d3.csv("events.csv").then(data => {
+  data.forEach(d => {
+    d.date = new Date(d.date);
+    d.randomY = Math.random() * height; // Store initial random y-position
+
+  });
+
+  const events = svg.selectAll(".event")
+    .data(data)
+    .enter().append("g")
+    .attr("class", "event")
+    .attr("transform", d => `translate(${x(d.date)},${d.randomY})`);
+   
+
+  // Draw dots for events
+  events.append("circle")
+    .attr("r", 10) // Base size of the dots
+    .attr("fill", "black")
+    //.style("filter", "url(#blur-filter)"); // Apply the blur filter
+    // Set color of the dots to black
+
+  // Draw spiral path for each event
+  events.append("path")
+    .attr("id", (d, i) => `spiral-path-${i}`)
+    .attr("d", () => createSpiralPath(5, 2, 100)) // Set a fixed size for initial path
+    .style("fill", "none")
+    .style("stroke", "none");
+
+  // Add text along the spiral path
+  events.append("text")
+    .append("textPath")
+    .attr("href", (d, i) => `#spiral-path-${i}`)
+    .attr("fill", "white")
+    .style("font-size", "1px")
+    //.style("filter", "url(#blur-filter)") // Apply the blur filter
+    .text(d => d.note);
+});
+
+
+
+
+
+
+// Zoom Functionality
+const zoom = d3.zoom()
+  .scaleExtent([1, 10])
+  .on("zoom", zoomed);
+
+svg.call(zoom);
+
+function zoomed(event) {
+  const transform = event.transform;
+  console.log(transform);
+  // Update the weekly bands
+  svg.selectAll("rect")
+    .attr("x", d => transform.applyX(x(d)))
+    .attr("width", d => transform.k * (x(new Date(d.getTime() + oneWeek)) - x(d)));
+
+  // Update the event group position
+  svg.selectAll(".event")
+  .attr("transform", d => {
+    const transformedX = transform.applyX(x(d.date));
+    const transformedY = transform.applyY(d.randomY);
+    console.log(transformedX, transformedY)
+    return `translate(${transformedX},${transformedY})`;
+  });
+  svg.selectAll(".event path")
+  .attr("d", d => {
+    // Smooth transition formula for spiral path size
+    const size = transform.k <= 8
+                  ? 4.99 ** transform.k
+                  : 4.99 ** 7 / ((transform.k - 7) ** 7);  // Gradual decrease after transform.k > 7
     
-    const xScale = d3.scaleLinear()
-        .domain([minScore - buffer, maxScore])
-        .range([margin.left, width - margin.right]);
+    return createSpiralPath(size, 4, 100);
+  });
+  // Update the size of the circles (dots) within each event group
+  svg.selectAll(".event circle")
+    .attr("r", 10*transform.k - 0.7*(transform.k ** 2) ); // Adjust the size based on the zoom level
 
-     yScale = d3.scaleBand()
-        .domain(data.map(d => d.word))
-        .range([margin.top, height - margin.bottom])
-        .padding(0.1);
+  // Update the font size of the text along the spiral path
+  svg.selectAll(".event text textPath")
+  .style("font-size", d => {
+    // Calculate the font size at the transition point (transform.k = 7)
+    const transitionFontSize = 1.9 ** 7;
+    // Apply different logic based on the value of transform.k
+    return transform.k > 7 
+      ?  transitionFontSize / ((transform.k - 6)) + "px" // Decrease size rapidly
+      : 1.9 ** transform.k + "px"; // Normal increase
+  });
+  // Update the x-axis
+  svg.select(".x.axis").call(xAxis.scale(transform.rescaleX(x)))
+  .style("font-family", "'Crimson Text', serif"); // Apply the 'Crimson Text' font
 
-    // Draw lines
-    svg.selectAll('.line')
-        .data(data)
-        .enter().append('line')
-        .attr('class', d => `line line-${d.word.replace(/\s+/g, '-')}`) // Replace spaces with hyphens
-        .attr('x1', d => xScale(d.score_present))
-        .attr('x2', d => xScale(d.score_absent))
-        .attr('y1', d => yScale(d.word))
-        .attr('y2', d => yScale(d.word))
-        .attr('stroke', 'grey')
-        .attr('stroke-width', defaultStrokeWidth);
-    // Draw circles
-    svg.selectAll('.circle')
-        .data(data)
-        .enter().append('circle')
-        .attr('cx', d => xScale(d.score_present))
-        .attr('cy', d => yScale(d.word))
-        .attr('r', d => scaleRadius(d.popularity * 0.5)) // Adjust the radius
-        .attr('fill', 'black')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 1);
-
-    svg.selectAll('.circle')
-        .data(data)
-        .enter().append('circle')
-        .attr('cx', d => xScale(d.score_absent))
-        .attr('cy', d => yScale(d.word))
-        .attr('r', d => scaleRadius(0)) // Adjust the radius
-        .attr('fill', 'white')
-        .attr('stroke', 'black')
-        .attr('stroke-width', 1);
-
-    // Add Axes
-
-    const yAxis = d3.axisLeft(yScale)
-    .tickFormat(d => d);
-    svg.append('g')
-        .attr('class', 'y-axis')
-        .attr('transform', `translate(${margin.left},0)`)
-        .call(yAxis)
-        .selectAll('.tick text')
-        .attr('class', d => `label label-${d.replace(/\s+/g, '-')}`); // Assign class to y-axis labels
-
-
-    const xAxis = d3.axisBottom(xScale);
-    svg.append('g')
-        .attr('transform', `translate(20,${height - margin.bottom})`)
-        .call(xAxis);
-
-    // Hover events for y-axis labels
-    svg.selectAll('.label')
-        .on('mouseover', function(event, d) {
-            svg.selectAll(`.line-${d.replace(/\s+/g, '-')}`)
-                .attr('stroke-width', hoverStrokeWidth);
-        })
-        .on('mouseout', function(event, d) {
-            svg.selectAll(`.line-${d.replace(/\s+/g, '-')}`)
-                .attr('stroke-width', defaultStrokeWidth);
-        });
-
-    // Sort function
-    function sortBy(criteria) {
-        console.log("Before sorting:", data.map(d => ({ word: d.word, criteria: d[criteria] })));
-    
-        if (criteria === 'popularity') {
-            data.sort((a, b) => d3.descending(a.popularity, b.popularity));
-        } else if (criteria === 'score') {
-            data.sort((a, b) => d3.descending(a.score_present, b.score_present));
-        }
-        else if (criteria === 'score-difference') {
-            data.sort((a, b) => d3.descending(a.score_present - a.score_absent, b.score_present - b.score_absent));
-        }
-        console.log("After sorting:", data.map(d => ({ word: d.word, criteria: d[criteria] })));
-       
-        yScale.domain(data.map(d => d.word));
-
-        // Transition the y-positions of the lines and circles
-        svg.selectAll('line')
-            .transition()
-            .duration(750)
-            .attr('y1', d => yScale(d.word))
-            .attr('y2', d => yScale(d.word));
-    
-        svg.selectAll('circle') // Make sure this selector is correct
-            .transition()
-            .duration(750)
-            .attr('cy', d => yScale(d.word));
-        
-            const yAxis = d3.axisLeft(yScale); // Create a new y-axis
-        svg.select('.y-axis') // Select the y-axis group
-            .transition() 
-            .duration(750)
-            .call(yAxis); // Update the y-axis
-    function setActiveButton(selectedButtonId) {
-    d3.selectAll('.btn').classed('active', false); // Remove 'active' class from all buttons
-    d3.select(`#${selectedButtonId}`).classed('active', true); // Add 'active' class to the selected button
 }
 
 
-
-function setActiveButton(selectedButtonId) {
-    d3.selectAll('.btn').classed('active', false); // Remove 'active' class from all buttons
-    d3.select(`#${selectedButtonId}`).classed('active', true); // Add 'active' class to the selected button
+// Function to get a random color from the given palette
+function getRandomColorFromPalette(palette) {
+  const randomIndex = Math.floor(Math.random() * palette.length);
+  return palette[randomIndex];
 }
 
-d3.select('#sort-popularity').on('click', () => {
-    sortBy('popularity');
-    setActiveButton('sort-popularity');
-});
+// Function to determine the season based on the month
+function getSeason(month) {
+  if (month >= 5 && month <= 8) { // Summer months (June to August)
+    return warmPalette;
+  } else { // Winter months (November to February)
+    return coolPalette;
+  }
+}
 
-d3.select('#sort-score').on('click', () => {
-    sortBy('score');
-    setActiveButton('sort-score');
-});
-
-d3.select('#sort-score-difference').on('click', () => {
-    sortBy('score-difference');
-    setActiveButton('sort-score-difference');
-});
-
-    }
-
-    // Event listeners for sorting
-    d3.select('#sort-popularity').on('click', () => sortBy('popularity'));
-    d3.select('#sort-score').on('click', () => sortBy('score'));
-    d3.select('#sort-score-difference').on('click', () => sortBy('score-difference'));
-
-});
+// Function to generate a spiral path
+function createSpiralPath(radius, turns, numPoints) {
+  let path = "";
+  for (let i = 0; i < numPoints; i++) {
+    let angle = i / numPoints * (turns * 2 * Math.PI);
+    let r = radius * (i / numPoints);
+    let x = r * Math.cos(angle);
+    let y = r * Math.sin(angle);
+    path += `${i === 0 ? 'M' : 'L'} ${x} ${y} `;
+  }
+  return path;
+}
