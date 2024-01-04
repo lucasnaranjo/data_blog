@@ -5,6 +5,7 @@ let originalData, groupedData;
 let useGroupedData = false; // State of the toggle
 d3.select("#your-svg-container").selectAll("*").remove();
 let currentSortCriteria = 'popularity'; // Default sorting criteria
+let currentMetric = 'rate';
 
 
 
@@ -140,6 +141,8 @@ d3.csv("mean_scores_grouped_df.csv").then(loadedData => {
         d.consistency_absent = +d.consistency_absent;
         d.buttons_present = +d.buttons_present;
         d.buttons_absent = +d.buttons_absent;
+        d.entropy_present = +d.entropy_present;
+        d.entropy_absent = +d.entropy_absent;
         d.popularity = +d.popularity;
     });
     yScale = d3.scaleBand()
@@ -161,17 +164,23 @@ d3.selectAll('[data-metric]').on('click', function() {
     d3.select(`#description-${currentMetric}`).style("display", "block");
     // Update the visualization based on the selected metric
     updateVisualization(currentMetric, useGroupedData);
+    sortBy('metric', currentMetric);
     setActiveButton(currentMetric);
+    setActiveSortButton('sort-by-metric');
 });
 
-// Function to update visualization based on the selected metric
+let showDifference = false; // Global toggle state
+let showDifference2 = false; // Global toggle state
+
 function updateVisualization(metric, useGroupData) {
     if (!originalData || (useGroupData && !groupedData)) {
         console.error("Data not loaded properly.");
         return;
     }
+
     const currentData = useGroupData ? groupedData : originalData;
     yScale.domain(currentData.map(d => useGroupData ? d.word_category : d.word));
+
     // Define metric labels
     const metricAxisLabels = {
         'rate': 'Average Number of Interactions per Day',
@@ -181,9 +190,26 @@ function updateVisualization(metric, useGroupData) {
         'entropy': 'H (bits)'
     };
 
-    // Update x-axis label
-    xAxisLabel.text(metricAxisLabels[metric] || '');
-    
+    // Adjust xScale domain based on the toggle state
+    let metricPresent = metric + '_present';
+    let metricAbsent = metric + '_absent';
+    let maxScore, minScore;
+
+    if (showDifference) {
+        maxScore = d3.max(currentData, d => Math.abs(d[metricPresent] - d[metricAbsent]));
+        minScore = -maxScore;
+    } else {
+        minScore = d3.min(currentData, d => d[metricPresent]);
+        maxScore = d3.max(currentData, d => d[metricPresent]);
+    }
+    const buffer = (maxScore - minScore) * 0.05; // 5% buffer
+    xScale.domain([minScore - buffer, maxScore + buffer]);
+
+    // Update x-axis label based on toggle state
+    let xAxisLabelContent = showDifference ? `Difference in ${metric}` : metricAxisLabels[metric] || metric;
+    xAxisLabel.text(xAxisLabelContent);
+
+    // Update stripes
     stripesGroup.selectAll('.stripe')
         .data(currentData)
         .join('rect')
@@ -194,20 +220,6 @@ function updateVisualization(metric, useGroupData) {
         .attr('height', yScale.bandwidth())
         .attr('fill', (d, i) => i % 2 === 0 ? '#AED6F1' : '#e8f4f8');
 
-    let metricPresent = metric + '_present';
-    let metricAbsent = metric + '_absent';
-       // Draw alternating stripes for background
-    
-    // Update yScale domain based on the current dataset
-        // Clear existing stripes and other elements
-
-    // Update xScale domain
-    const minScore = d3.min(currentData, d => Math.min(d[metricPresent], d[metricAbsent]));
-    const maxScore = d3.max(currentData, d => Math.max(d[metricPresent], d[metricAbsent]));
-    const buffer = (maxScore - minScore) * 0.05; // 5% buffer
-    xScale.domain([minScore - buffer, maxScore + buffer]);
-    // Calculate the vertical center of each band
-    const bandCenter = yScale.bandwidth() / 2;
     // Update lines
     const lines = svg.selectAll('.line')
                      .data(currentData);
@@ -217,66 +229,61 @@ function updateVisualization(metric, useGroupData) {
          .merge(lines)
          .transition()
          .duration(750)
-         .attr('x1', d => xScale(d[metricPresent]))
-         .attr('x2', d => xScale(d[metricAbsent]))
-         .attr('y1', d => yScale(useGroupData ? d.word_category : d.word) + yScale.bandwidth() / 2)
-         .attr('y2', d => yScale(useGroupData ? d.word_category : d.word) + yScale.bandwidth() / 2)
-         .attr('stroke', 'grey');
+         .attr('x1', d => xScale(showDifference ? d[metricPresent] - d[metricAbsent] : d[metricPresent]))
+         .attr('x2', d => showDifference ? xScale(0) : xScale(d[metricAbsent]))
+        .attr('y1', d => yScale(useGroupData ? d.word_category : d.word) + yScale.bandwidth() / 2)
+        .attr('y2', d => yScale(useGroupData ? d.word_category : d.word) + yScale.bandwidth() / 2)
+        .attr('stroke', 'grey');
 
     lines.exit().remove();
 
+
     // Update circles
-    // For metricPresent
     const circlesPresent = svg.selectAll('.circle-present')
-                              .data(currentData);
+        .data(currentData)
+        .join('circle')
+        .transition()
+        .duration(750)
+        .attr('class', 'circle-present')
+        .attr('cx', d => xScale(showDifference ? d[metricPresent] - d[metricAbsent] : d[metricPresent]))
+        .attr('cy', d => yScale(useGroupData ? d.word_category : d.word) + yScale.bandwidth() / 2)
+        .attr('r', d => scaleRadius(d.popularity))
+        .attr('fill', 'black');
 
-    circlesPresent.enter().append('circle')
-                   .attr('class', 'circle-present')
-                   .merge(circlesPresent)
-                   .transition()
-                   .duration(750)
-                   .attr('cx', d => xScale(d[metricPresent]))
-                   .attr('cy', d => yScale(d.word)+ bandCenter)
-                   .attr('r', d => scaleRadius(d.popularity))
-                   .attr('fill', 'black');
+    // Draw vertical dotted line at x=0 if showing difference
+    if (showDifference) {
+        svg.selectAll('.center-line').data([0])
+            .join('line')
+            .attr('class', 'center-line')
+            .attr('x1', xScale(0))
+            .attr('x2', xScale(0))
+            .attr('y1', margin.top)
+            .attr('y2', height - margin.bottom)
+            .attr('stroke', 'grey')
+            .attr('stroke-dasharray', '2')
+            .attr('stroke-width', 1);
+    } else {
+        svg.selectAll('.center-line').remove();
+    }
 
-    circlesPresent.exit().remove();
+    // Update Axes
+    svg.select('.x-axis').transition().duration(750).call(d3.axisBottom(xScale));
+    svg.select('.y-axis').transition().duration(750).call(d3.axisLeft(yScale));
 
-    // For metricAbsent
-    const circlesAbsent = svg.selectAll('.circle-absent')
-                             .data(currentData);
-
-    circlesAbsent.enter().append('circle')
-                  .attr('class', 'circle-absent')
-                  .merge(circlesAbsent)
-                  .transition()
-                  .duration(750)
-                  .attr('cx', d => xScale(d[metricAbsent]))
-                  .attr('cy', d => yScale(d.word)+ bandCenter)
-                  .attr('r', d => scaleRadius(0))
-                  .attr('fill', 'white');
-
-                  circlesAbsent.exit().remove();
-              
-                  // Update Axes
-                  const xAxis = d3.axisBottom(xScale);
-                  svg.select('.x-axis')
-                     .transition()
-                     .duration(750)
-                     .attr('transform', `translate(0,${height - margin.bottom})`)
-                     .call(xAxis);
-              
-                  const yAxis = d3.axisLeft(yScale);
-                  svg.select('.y-axis')
-                     .transition()
-                     .duration(750)
-                     .call(yAxis);
-
+    // Update Legend (if applicable)
     let maxPopularity = d3.max(currentData, d => d.popularity);
     let minPopularity = d3.min(currentData, d => d.popularity);
     drawLegend(svg, maxPopularity, minPopularity, width, height, scaleRadius);
+}
 
-}           
+
+// Toggle Button Event Listener
+d3.select('#toggle-difference').on('click', function() {
+    showDifference = !showDifference; // Toggle the state
+    d3.select(this).classed('active', showDifference);
+    updateVisualization(currentMetric, useGroupedData); // Assuming 'currentMetric' is your current metric variable
+});
+        
 
 function setActiveButton(currentMetric) {
     console.log("Setting active button for metric:", currentMetric);
@@ -295,8 +302,15 @@ function sortBy(criteria, metric) {
         currentData.sort((a, b) => d3.descending(a.popularity, b.popularity));
     } else if (criteria === 'metric') {
         let metricPresent = metric + '_present';
-        currentData.sort((a, b) => d3.descending(a[metricPresent], b[metricPresent]));
-    }
+        let metricAbsent = metric + '_absent';
+
+        if (showDifference) {
+            // Sort by the difference between metricPresent and metricAbsent
+            currentData.sort((a, b) => d3.descending(a[metricPresent] - a[metricAbsent], b[metricPresent] - b[metricAbsent]));
+        } else {
+            // Sort by metricPresent
+            currentData.sort((a, b) => d3.descending(a[metricPresent], b[metricPresent]));
+        }}
     // Update visualization with sorted data
     updateVisualization(currentMetric, useGroupedData);
 }
@@ -357,16 +371,44 @@ svg.append('g')
 // Assume two words are selected for comparison
 let selectedWords = []; // Replace with actual word selection logic
 let metrics = ['rate', 'ratio', 'consistency', 'buttons','entropy'];
+// Function to normalize the metric value (0 to 1 range)
+function normalizeValue(value, metric) {
+    let minMetricValue = d3.min(originalData, d => d[`${metric}_present`]);
+    let maxMetricValue = d3.max(originalData, d => d[`${metric}_present`]);
 
-// Function to get metrics data for a word
-function getMetricsData(word) {
-  return originalData.filter(d => d.word === word).map(d => ({
-    rate: d.rate_norm,
-    ratio: d.ratio_norm,
-    consistency: d.consistency_norm,
-    buttons: d.buttons_norm, 
-    entropy: d.entropy_norm
-  }))[0];
+    // Standard normalization formula
+    return (value - minMetricValue) / (maxMetricValue - minMetricValue);
+}
+
+// Function to normalize the difference for a metric (-1 to 1 range)
+function normalizeDifference(difference, metric) {
+    let minMetricDifference = d3.min(originalData, d => d[`${metric}_present`] - d[`${metric}_absent`]);
+    let maxMetricDifference = d3.max(originalData, d => d[`${metric}_present`] - d[`${metric}_absent`]);
+
+    // Adjusting the difference to fall between -1 and 1
+    let adjustedDifference = (2 * (difference - minMetricDifference)) / (maxMetricDifference - minMetricDifference) - 1;
+
+    return Math.max(-1, Math.min(adjustedDifference, 1)); // Ensuring the value is between -1 and 1
+}
+
+// Modify the getMetricsData function to use these normalization functions
+function getMetricsData(word, showDifference) {
+    let wordData = originalData.filter(d => d.word === word)[0];
+    if (!wordData) return {};
+
+    if (showDifference) {
+        // Calculate and normalize differences
+        return metrics.reduce((obj, metric) => {
+            obj[metric] = normalizeDifference(wordData[`${metric}_present`] - wordData[`${metric}_absent`], metric);
+            return obj;
+        }, {});
+    } else {
+        // Return present metric values
+        return metrics.reduce((obj, metric) => {
+            obj[metric] = normalizeValue(wordData[`${metric}_present`], metric);
+            return obj;
+        }, {});
+    }
 }
 
 // Define star plot dimensions
@@ -387,10 +429,6 @@ const starSvg = d3.select('#starplot-container')
 
 const buffer = 0.3; // Example buffer value, adjust as needed
 
-  // Adjust the radial scale to include the buffer
-const radialScale = d3.scaleLinear()
-    .domain([-buffer, 1 + buffer]) // Extend the domain beyond 0 and 1
-    .range([0, starRadius]);
 
 // Draw axes for star plot
 metrics.forEach((metric, i) => {
@@ -424,51 +462,112 @@ let colorMap = {}; // Object to store colors for each word
 const colors = ['blue', 'red','skyblue',  'orange']; // Your colors
 let colorIndex = 0; // To track which color to assign next
 
-function updateStarPlot(selectedWords, originalData) {
-    // Clear existing stars
-    starSvg.selectAll('path').remove();
+// Define a radial scale that accommodates negative values
+const radialScale = d3.scaleLinear()
+    .domain([-1, 1]) // Domain from -1 to 1 to include negative differences
+    .range([0, starRadius]);
 
+    // Function to toggle showing differences
+
+    
+    // Function to draw the star for a word
+    function drawStar(word, color) {
+        let metricsData = getMetricsData(word, showDifference2);
+        let points = metrics.map((metric, i) => {
+            let value = metricsData[metric];
+            let angle = Math.PI * 2 / metrics.length * i;
+            return polarToCartesian(starCenter.x, starCenter.y, radialScale(value), angle);
+        });
+    
+        // Draw the star shape
+        let starPath = `M ${points.map(p => `${p.x},${p.y}`).join(' L ')} Z`;
+    
+        starSvg.append('path')
+            .attr('d', starPath)
+            .attr('stroke', color)
+            .attr('fill', color)
+            .attr('fill-opacity', 0.5);
+    }
+    
+   // Function to normalize the metric value (0 to 1 range)
+function normalizeValue(value, metric) {
+    let minMetricValue = d3.min(originalData, d => d[`${metric}_present`]);
+    let maxMetricValue = d3.max(originalData, d => d[`${metric}_present`]);
+
+    // Standard normalization formula
+    return (value - minMetricValue) / (maxMetricValue - minMetricValue);
+}
+
+// Function to normalize the difference for a metric (-1 to 1 range)
+function normalizeDifference(difference, metric) {
+    let minMetricDifference = d3.min(originalData, d => d[`${metric}_present`] - d[`${metric}_absent`]);
+    let maxMetricDifference = d3.max(originalData, d => d[`${metric}_present`] - d[`${metric}_absent`]);
+
+    // Adjusting the difference to fall between -1 and 1
+    let adjustedDifference = (2 * (difference )) / (maxMetricDifference - minMetricDifference);
+
+    return Math.max(-1, Math.min(adjustedDifference, 1)); // Ensuring the value is between -1 and 1
+}
+
+// Modify the getMetricsData function to use these normalization functions
+function getMetricsData(word, showDifference2) {
+    let wordData = originalData.filter(d => d.word === word)[0];
+    if (!wordData) return {};
+
+    if (showDifference2) {
+        // Calculate and normalize differences
+        return metrics.reduce((obj, metric) => {
+            obj[metric] = normalizeDifference(wordData[`${metric}_present`] - wordData[`${metric}_absent`], metric);
+            return obj;
+        }, {});
+    } else {
+        // Return present metric values
+        return metrics.reduce((obj, metric) => {
+            obj[metric] = normalizeValue(wordData[`${metric}_present`], metric);
+            return obj;
+        }, {});
+    }
+}
+
+    
+    // Example toggle button setup
+    d3.select('#toggle-difference2').on('click', toggleShowDifference);
+    
+
+// Update function to redraw the star plot when showing differences
+function updateStarPlot(selectedWords, showDifference2) {
+    // Clear existing stars
+    starSvg.selectAll('path, circle').remove();
+
+    // Draw zero ticks if showDifference is true
+    if (showDifference2) {
+        drawZeroTicks();
+    }
     // Assign colors and draw stars for each selected word
     selectedWords.forEach(word => {
         if (!colorMap[word]) {
-            // Assign a color and move to the next color
             colorMap[word] = colors[colorIndex % colors.length];
             colorIndex++;
         }
-        drawStar(word, colorMap[word]);
+        drawStar(word, colorMap[word], showDifference2);
     });
 }
 
 
-// Function to draw the star for a word
-function drawStar(word, color) {
-  let metricsData = getMetricsData(word);
-  let points = metrics.map((metric, i) => {
-    let value = metricsData[metric];
-    let angle = Math.PI * 2 / metrics.length * i;
-    return polarToCartesian(starCenter.x, starCenter.y, radialScale(value), angle);
-  });
 
-  // Draw the star shape
-  let starPath = `M ${points.map(p => `${p.x},${p.y}`).join(' L ')} Z`;
 
-  starSvg.append('path')
-    .attr('d', starPath)
-    .attr('stroke', color)
-    .attr('fill', color)
-    .attr('fill-opacity', 0.5);
-}
+
 
 
 // Function to draw the legend
-function drawLegend(svg, maxPopularity, minPopularity, width, height) {
+function drawLegend(svg, maxPopularity, minPopularity) {
     svg.select(".legend").remove();
 
     console.log("Drawing legend with maxPopularity:", maxPopularity, "and minPopularity:", minPopularity);
 
     const legendGroup = svg.append("g")
                            .attr("class", "legend")
-                           .attr("transform", `translate(620,315)`); // Adjusted to position at top left
+                           .attr("transform", `translate(80,30)`); // Adjusted to position at top left
 
     // Add legend title
     legendGroup.append("text")
@@ -481,8 +580,7 @@ function drawLegend(svg, maxPopularity, minPopularity, width, height) {
     legendGroup.append("circle")
                .attr("cx", 10)
                .attr("cy", 20)
-               .attr("r", scaleRadius(maxPopularity))
-               .attr("fill", "grey");
+               .attr("r", scaleRadius(maxPopularity));
 
     legendGroup.append("text")
                .attr("x", 30)
@@ -522,3 +620,26 @@ function updateWordListStyle(selectedWords) {
 
 updateWordListStyle(selectedWords);
 updateStarPlot(selectedWords);
+
+
+// Function to toggle showing differences
+function toggleShowDifference() {
+    showDifference2 = !showDifference2;
+    d3.select(this).classed('active', showDifference2);
+    updateStarPlot(selectedWords, originalData);
+}
+
+
+function drawZeroTicks() {
+    metrics.forEach((metric, i) => {
+        let angle = Math.PI * 2 / metrics.length * i;
+        let zeroCoords = polarToCartesian(starCenter.x, starCenter.y, radialScale(0), angle);
+
+        // Draw small circles or lines at the zero position
+        starSvg.append('circle')
+            .attr('cx', zeroCoords.x)
+            .attr('cy', zeroCoords.y)
+            .attr('r', 2) // Adjust the radius as needed
+            .attr('fill', 'black');
+    });
+}
